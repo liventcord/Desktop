@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4  # Updated to v4
         with:
           python-version: '3.9'
 
@@ -30,7 +30,7 @@ jobs:
           nuitka --standalone --show-progress --plugin-enable=qt-plugins main.py
 
       - name: Upload Executable
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3  # Ensure you're using the latest version
         with:
           name: liventcord-executable
           path: ./main.dist/
