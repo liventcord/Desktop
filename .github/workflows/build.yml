@@ -30,7 +30,7 @@ jobs:
           nuitka --standalone --show-progress --plugin-enable=qt-plugins main.py
 
       - name: Upload Executable
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: liventcord-executable
           path: ./main.dist/
