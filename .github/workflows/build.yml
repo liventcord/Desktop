@@ -30,7 +30,8 @@ jobs:
         run: |
           echo "Building the executable..."
           nuitka --standalone --show-progress \
-                 --enable-plugin=qt-plugins \
+                 --plugin-enable=qt-plugins \
+                 --include-qt-plugins=all \
                  --include-qt-plugins=sensible,styles \
                  main.py
 
