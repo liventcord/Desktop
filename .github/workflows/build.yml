@@ -1,8 +1,10 @@
 name: Build Executable
 
 on: 
-  push:  # Triggers on all branch pushes
-  pull_request:  # Triggers on pull requests
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   build:
@@ -10,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Updated to v3
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4  # Updated to v4
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -27,10 +29,14 @@ jobs:
 
       - name: Build Executable
         run: |
+          echo "Building the executable..."
           nuitka --standalone --show-progress --plugin-enable=qt-plugins main.py
 
+      - name: List files in build directory
+        run: ls -la ./main.dist/
+
       - name: Upload Executable
-        uses: actions/upload-artifact@v3  # Ensure you're using the latest version
+        uses: actions/upload-artifact@v3
         with:
           name: liventcord-executable
-          path: ./main.dist/
+          path: ./main.dist/*
