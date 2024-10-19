@@ -33,7 +33,7 @@ jobs:
       - name: Build Executable
         run: |
           echo "Building the executable..."
-          nuitka --standalone --show-progress --plugin-enable=qt main.py
+          nuitka --standalone --show-progress --plugin-enable=qt-plugins main.py
 
       - name: List files in build directory
         run: ls -la ./main.dist/
