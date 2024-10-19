@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   build:
@@ -27,13 +26,13 @@ jobs:
       - name: Install Nuitka
         run: pip install nuitka
 
-      - name: Check Nuitka version
-        run: nuitka --version
-
       - name: Build Executable
         run: |
           echo "Building the executable..."
-          nuitka --standalone --show-progress --plugin-enable=qt-plugins main.py
+          nuitka --standalone --show-progress \
+                 --enable-plugin=qt-plugins \
+                 --include-qt-plugins=sensible,styles \
+                 main.py
 
       - name: List files in build directory
         run: ls -la ./main.dist/
