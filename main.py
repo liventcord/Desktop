@@ -36,10 +36,9 @@ class BrowserWindow(QtWidgets.QMainWindow):
         self.browser.urlChanged.connect(self.on_url_changed)
         self.browser.loadFinished.connect(self.on_load_finished)
 
-        self.setWindowTitle("Webview App")
+        self.setWindowTitle("LiventCord")
         self.setGeometry(100, 100, 1200, 800)
 
-        # Load the initial page with session data if available
         initial_url = self.session_manager.get_session_data().get('last_visited_url', 'http://localhost:5005/app')
         self.load_page(initial_url)
 
@@ -48,7 +47,6 @@ class BrowserWindow(QtWidgets.QMainWindow):
 
     def on_url_changed(self, q):
         print(f"Navigated to: {q.toString()}")
-        # Save the current URL to session
         self.session_manager.set_session_data('last_visited_url', q.toString())
 
     def on_load_finished(self, success):
