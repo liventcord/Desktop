@@ -35,7 +35,7 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: printing all contents
+      - name: Debug: Print all contents of current directory
         run: |
           ls -R # Print all contents of the current directory and its subdirectories
 
@@ -58,10 +58,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: "This is the release of the Neutralino app"
-          files: neutralino-app/dist/*  # Ensure this matches the output directory of your build
+      - name: Create GitHub release using GitHub API
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          RELEASE_NAME="Release $TAG_NAME"
+          BODY="This is the release of the Neutralino app"
+
+          # Create GitHub release using GitHub API
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"tag_name": "'"$TAG_NAME"'", "name": "'"$RELEASE_NAME"'", "body": "'"$BODY"'", "draft": false, "prerelease": false}' \
+            https://api.github.com/repos/${{ github.repository }}/releases
+
+      - name: Upload release assets
+        run: |
+          # Find all the files you want to upload in the dist directory
+          for file in neutralino-app/dist/neutralino-app/*; do
+            echo "Uploading $file"
+
+            # Upload each file to the release
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -F "file=@$file" \
+              "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $file)"
+          done
