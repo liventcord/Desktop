@@ -26,7 +26,7 @@ jobs:
           npm install
 
       - name: Set up Rust
-        uses: actions/setup-rust@v1
+        uses: rust-lang/setup-rust@v1
         with:
           rust-version: '1.69.0'
 
