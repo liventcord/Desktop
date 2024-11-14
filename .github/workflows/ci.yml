@@ -1,4 +1,4 @@
-name: Build Tauri App
+name: Build and Test Tauri App
 
 on:
   push:
@@ -14,9 +14,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Use the correct version of checkout
 
-      - name: Set up Node.js
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1  # Set up Rust toolchain
+        with:
+          toolchain: 'stable'  # You can change this to a specific version if needed
+
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
@@ -24,11 +29,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-
-      - name: Set up Rust
-        uses: rust-lang/setup-rust@v1
-        with:
-          rust-version: '1.69.0'
 
       - name: Install Tauri CLI
         run: |
@@ -43,3 +43,39 @@ jobs:
         with:
           name: tauri-app
           path: src-tauri/target/release/*
+
+  # Test Rust code
+  test:
+    name: Cargo Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: 'stable'
+
+      - name: Run Rust tests
+        run: cargo test --all-features
+
+  # Check Rust formatting with rustfmt
+  formatting:
+    name: Cargo fmt
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain with rustfmt
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
+        with:
+          check: true  # This ensures rustfmt checks formatting without applying changes
