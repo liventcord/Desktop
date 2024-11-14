@@ -64,11 +64,11 @@ jobs:
         id: find_binaries
         run: |
           # Define release files to be included in the release
-          release_files="neutralino-app/neutralino-app-win_x64.exe
-          neutralino-app/neutralino-app-mac_arm64
-          neutralino-app/neutralino-app-mac_universal
-          neutralino-app/neutralino-app-linux_armhf
-          neutralino-app/neutralino-app-linux_x64
+          release_files="neutralino-app/neutralino-app-win_x64.exe \
+          neutralino-app/neutralino-app-mac_arm64 \
+          neutralino-app/neutralino-app-mac_universal \
+          neutralino-app/neutralino-app-linux_armhf \
+          neutralino-app/neutralino-app-linux_x64 \
           neutralino-app/neutralino-app-mac_x64"
 
           # Ensure files exist and collect them into a list
@@ -79,6 +79,7 @@ jobs:
             fi
           done
 
+          # Export the binaries as a space-separated string
           echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
           echo "Found valid binaries: $valid_binaries"
 
