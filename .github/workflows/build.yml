@@ -47,22 +47,33 @@ jobs:
       - name: List downloaded files
         run: ls -R neutralino-app
 
-      - name: Map expected binaries directly
+      - name: Map expected binaries directly with extensions
         id: map_binaries
         run: |
-          # Directly define the expected files based on known patterns
+          # Define the full paths of expected binaries with extensions for Linux and macOS builds
           binaries=(
-            "neutralino-app/neutralino-app-linux_arm64"
-            "neutralino-app/neutralino-app-linux_armhf"
-            "neutralino-app/neutralino-app-linux_x64"
-            "neutralino-app/neutralino-app-mac_arm64"
-            "neutralino-app/neutralino-app-mac_universal"
-            "neutralino-app/neutralino-app-mac_x64"
-            "neutralino-app/neutralino-app-win_x64.exe"
+            "neutralino-app/neutralino-app/dist/neutralino-app-linux_arm64"
+            "neutralino-app/neutralino-app/dist/neutralino-app-linux_armhf"
+            "neutralino-app/neutralino-app/dist/neutralino-app-linux_x64"
+            "neutralino-app/neutralino-app/dist/neutralino-app-mac_arm64"
+            "neutralino-app/neutralino-app/dist/neutralino-app-mac_universal"
+            "neutralino-app/neutralino-app/dist/neutralino-app-mac_x64"
+            "neutralino-app/neutralino-app/dist/neutralino-app-win_x64.exe"
           )
-          # Set the binaries as environment variable
-          echo "BINARY_FILES=${binaries[*]}" >> $GITHUB_ENV
-          echo "Found binaries: ${binaries[*]}"
+          # Manually add extensions for the non-Windows builds
+          renamed_binaries=()
+          for binary in "${binaries[@]}"; do
+            if [[ "$binary" == *"linux"* ]]; then
+              renamed_binaries+=("${binary}.tar")
+            elif [[ "$binary" == *"mac"* ]]; then
+              renamed_binaries+=("${binary}.tar")
+            else
+              renamed_binaries+=("$binary")
+            fi
+          done
+          # Set the renamed binaries as environment variable
+          echo "BINARY_FILES=${renamed_binaries[*]}" >> $GITHUB_ENV
+          echo "Found binaries: ${renamed_binaries[*]}"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
