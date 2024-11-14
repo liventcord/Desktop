@@ -26,7 +26,7 @@ jobs:
 
       - name: Create Neutralino Project
         run: |
-          neu create neutralino-app  # This will automatically generate the necessary config
+          neu create neutralino-app
           cd neutralino-app
 
       - name: Build Neutralino App
@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*  # Path to the built files
+          path: neutralino-app/dist/*
 
   release:
     name: Create GitHub release
@@ -53,8 +53,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          name: Release ${{ github.ref }}  # Corrected input for release name
           body: "This is the release of the Neutralino app"
+          files: neutralino-app/dist/*  # Ensure the path is correct for your built assets
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
