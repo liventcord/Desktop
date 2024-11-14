@@ -1,85 +1,61 @@
-name: Build and Release Neutralino.js App
+name: Release Workflow
 
 on:
   push:
-    branches:
-      - main
-
-permissions:
-  contents: write
+    tags:
+      - 'v*'  # This will trigger the workflow for version tags (e.g., v1.0.0)
 
 jobs:
-  build:
+  create_release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js and install Neutralino CLI
-        run: |
-          npm install -g @neutralinojs/neu
-          neu create neutralino-app
-          cd neutralino-app
-          neu build --release
-      - name: Check dist directory
-        run: ls -R neutralino-app/dist
+    - name: Set up Node.js (if your project needs it)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # specify the version your project needs
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: neutralino-app
-          path: neutralino-app/dist/*
+    - name: Build your app (if applicable)
+      run: |
+        # Replace this with the actual build command for your project
+        npm install
+        npm run build
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
+    - name: Create a new release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: "Release ${{ github.ref }}"
+        body: "Release of the Neutralino app"
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Upload release assets
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: neutralino-app/neutralino-app/dist/neutralino-app-linux_arm64
+        asset_name: neutralino-app-linux_arm64
+        asset_content_type: application/octet-stream
 
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: neutralino-app
+    - name: Upload release assets for other platforms
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: neutralino-app/neutralino-app/dist/neutralino-app-linux_armhf
+        asset_name: neutralino-app-linux_armhf
+        asset_content_type: application/octet-stream
 
-      - name: List downloaded files
-        run: ls -R neutralino-app
-
-      - name: Map expected binaries directly (no extension changes)
-        id: map_binaries
-        run: |
-          binaries=(
-            "neutralino-app/neutralino-app/dist/neutralino-app-linux_arm64"
-            "neutralino-app/neutralino-app/dist/neutralino-app-linux_armhf"
-            "neutralino-app/neutralino-app/dist/neutralino-app-linux_x64"
-            "neutralino-app/neutralino-app/dist/neutralino-app-mac_arm64"
-            "neutralino-app/neutralino-app/dist/neutralino-app-mac_universal"
-            "neutralino-app/neutralino-app/dist/neutralino-app-mac_x64"
-            "neutralino-app/neutralino-app/dist/neutralino-app-win_x64.exe"
-          )
-          echo "BINARY_FILES=${binaries[*]}" >> $GITHUB_ENV
-          echo "Found binaries: ${binaries[*]}"
-
-      - name: Create GitHub release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: main
-          release_name: Release ${{ github.ref }}
-          body: "Release of the Neutralino app"
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload release assets
-        run: |
-          for file in ${BINARY_FILES}; do
-            echo "Uploading $file..."
-            curl -XPOST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              --data-binary @$file \
-              "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
-          done
+    - name: Upload release assets for Windows
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: neutralino-app/neutralino-app/dist/neutralino-app-win_x64.exe
+        asset_name: neutralino-app-win_x64.exe
+        asset_content_type: application/octet-stream
