@@ -23,10 +23,18 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: List neutralino-app directory contents
+        run: ls -R neutralino-app  # List contents of neutralino-app to verify file locations
+
       - name: Update Neutralino config to point to remote URL
         run: |
-          # Directly modify the neutralino-config.json in the root folder
-          sed -i 's#"url": "http://localhost:3000"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino-config.json
+          # Now we update the neutralino-config.json if it exists
+          if [ -f neutralino-app/neutralino-config.json ]; then
+            sed -i 's#"url": "http://localhost:3000"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino-config.json
+          else
+            echo "neutralino-config.json not found!"
+            exit 1
+          fi
 
       - name: Check dist directory
         run: ls -R neutralino-app/dist
