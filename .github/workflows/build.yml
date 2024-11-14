@@ -59,6 +59,10 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: Verify dist contents
+        run: |
+          ls -R neutralino-app/dist
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
