@@ -45,6 +45,9 @@ jobs:
         with:
           name: neutralino-app
 
+      - name: List downloaded files
+        run: ls -R
+
       - name: Find all binary files in the downloaded artifact
         id: find_binaries
         run: |
