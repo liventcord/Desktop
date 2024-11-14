@@ -37,13 +37,13 @@ jobs:
 
       - name: Check dist directory
         run: |
-          ls -R neutralino-app/dist
+          ls -R neutralino-app/dist  # Debugging step to verify files are in the dist directory
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*
+          path: neutralino-app/dist/*  # Upload all files in dist directory
 
   release:
     name: Create GitHub release
@@ -60,4 +60,4 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: "This is the release of the Neutralino app"
-          files: neutralino-app/dist/*  # Uploads the compiled application binaries
+          files: neutralino-app/dist/*  # This uploads all files in dist directory (like the binaries)
