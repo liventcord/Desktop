@@ -47,10 +47,10 @@ jobs:
       - name: List downloaded files
         run: ls -R neutralino-app
 
-      - name: Map expected binaries directly with extensions
+      - name: Map expected binaries directly (no extension changes)
         id: map_binaries
         run: |
-          # Define the full paths of expected binaries with extensions for Linux and macOS builds
+          # Define the full paths of expected binaries directly without renaming
           binaries=(
             "neutralino-app/neutralino-app/dist/neutralino-app-linux_arm64"
             "neutralino-app/neutralino-app/dist/neutralino-app-linux_armhf"
@@ -60,26 +60,13 @@ jobs:
             "neutralino-app/neutralino-app/dist/neutralino-app-mac_x64"
             "neutralino-app/neutralino-app/dist/neutralino-app-win_x64.exe"
           )
-          # Manually add extensions for the non-Windows builds
-          renamed_binaries=()
-          for binary in "${binaries[@]}"; do
-            if [[ "$binary" == *"linux"* ]]; then
-              renamed_binaries+=("${binary}.tar")
-            elif [[ "$binary" == *"mac"* ]]; then
-              renamed_binaries+=("${binary}.tar")
-            else
-              renamed_binaries+=("$binary")
-            fi
-          done
-          # Set the renamed binaries as environment variable
-          echo "BINARY_FILES=${renamed_binaries[*]}" >> $GITHUB_ENV
-          echo "Found binaries: ${renamed_binaries[*]}"
+          # Set the binaries as environment variable
+          echo "BINARY_FILES=${binaries[*]}" >> $GITHUB_ENV
+          echo "Found binaries: ${binaries[*]}"
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
+      - name: Create GitHub release and upload assets
+        uses: jamesives/gh-actions-upload-release-asset@v1
         with:
-          tag_name: main
-          name: Release ${{ github.ref }}
-          body: "Release of the Neutralino app"
+          tag: main
           files: ${{ env.BINARY_FILES }}
           token: ${{ secrets.GITHUB_TOKEN }}
