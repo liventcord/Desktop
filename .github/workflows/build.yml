@@ -40,10 +40,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Find all binary files in the repo
+      - name: Find all binary files in the repo (excluding .git)
         id: find_binaries
         run: |
-          binaries=$(find . -type f -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+          binaries=$(find . -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
           echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
           echo "Found binaries: $binaries"
 
