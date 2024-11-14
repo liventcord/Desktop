@@ -65,7 +65,7 @@ jobs:
           echo "Found binaries: ${binaries[*]}"
 
       - name: Create GitHub release and upload assets
-        uses: jamesives/gh-actions-upload-release-asset@v1
+        uses: actions/upload-release-asset@v1
         with:
           tag: main
           files: ${{ env.BINARY_FILES }}
