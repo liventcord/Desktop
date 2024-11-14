@@ -47,25 +47,12 @@ jobs:
       - name: List downloaded files
         run: ls -R
 
-      - name: Extract compressed files
-        run: |
-          find neutralino-app -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
-            for file; do
-              case "$file" in
-                *.zip) unzip "$file" -d "${file%.zip}" ;;
-                *.tar) tar -xf "$file" -C "${file%.tar}" ;;
-                *.gz) gunzip "$file" ;;
-              esac
-            done
-          ' bash {} +
-
-      - name: Find all binary files in the extracted content
+      - name: Find all binary files in the downloaded content
         id: find_binaries
         run: |
-          binaries=$(find neutralino-app -type f ! -path './.git/*' -iname 'neutralino-app-*')
+          # Only include the packaged binary files, not unzipping
+          binaries=$(find neutralino-app -type f ! -path './.git/*' -iname '*.zip' -o -iname '*.tar' -o -iname '*.gz' -o -iname 'neutralino-app-*')
           valid_binaries=$(echo "$binaries" | grep -E '(\.exe|neutralino-app-linux|neutralino-app-mac|neutralino-app-win)')
-          # Special handling for mac_universal files
-          valid_binaries=$(echo "$valid_binaries" | grep -v 'neutralino-app-mac_universal')  # Remove mac_universal if causing issues
           echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
           echo "Found binaries: $valid_binaries"
 
