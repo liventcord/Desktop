@@ -3,7 +3,7 @@ name: Release Workflow
 on:
   push:
     tags:
-      - 'v*'  # This will trigger the workflow for version tags (e.g., v1.0.0)
+      - 'v*'  
 permissions:
   contents: write
 jobs:
