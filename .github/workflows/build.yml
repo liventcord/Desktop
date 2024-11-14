@@ -74,12 +74,17 @@ jobs:
       - name: Upload release assets
         run: |
           RELEASE_ID=${{ steps.create_release.outputs.release_id }}
-          for file in $(find neutralino-app/dist/neutralino-app -type f); do
-            echo "Uploading $file"
-            
-            # Upload each file to the release
-            curl -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -F "file=@$file" \
-              "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $file)"
+          ls -R neutralino-app/dist/
+          ls -R neutralino-app/dist/neutralino-app
+      
+          # Upload each file in the directory
+          for file in neutralino-app/dist/neutralino-app/*; do
+            if [[ -f "$file" ]]; then
+              echo "Uploading $file"
+              curl -X POST \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -F "file=@$file" \
+                "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $file)"
+            fi
           done
+
