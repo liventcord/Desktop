@@ -62,8 +62,8 @@ jobs:
       - name: Find all binary files in the extracted content
         id: find_binaries
         run: |
-          binaries=$(find neutralino-app -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
-          valid_binaries=$(echo "$binaries" | grep -E '(\.exe|\.bin|\.tar|\.zip|\.gz|neutralino-app-linux|neutralino-app-mac|neutralino-app-win)')
+          binaries=$(find neutralino-app -type f ! -path './.git/*' -iname 'neutralino-app-*')
+          valid_binaries=$(echo "$binaries" | grep -E '(\.exe|neutralino-app-linux|neutralino-app-mac|neutralino-app-win)')
           echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
           echo "Found binaries: $valid_binaries"
 
