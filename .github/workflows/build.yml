@@ -23,14 +23,14 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Check dist directory
-        run: ls -R neutralino-app/dist
+      - name: Check build directory
+        run: ls -R neutralino-app
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*
+          path: neutralino-app/*  # This uploads all files in the neutralino-app folder
 
   release:
     needs: build
@@ -54,5 +54,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: neutralino-app/dist/*
+          files: neutralino-app/*  # Corrected path to files in the neutralino-app folder
           token: ${{ secrets.GITHUB_TOKEN }}
