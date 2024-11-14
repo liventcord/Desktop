@@ -45,7 +45,7 @@ jobs:
           name: neutralino-app
 
       - name: List downloaded files
-        run: ls -R
+        run: ls -R neutralino-app
 
       - name: Map expected binaries directly
         id: map_binaries
