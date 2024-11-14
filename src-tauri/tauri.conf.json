@@ -1,17 +1,15 @@
 {
-  "build": {
-    "distDir": "../build", 
-    "devPath": "http://localhost:3000" 
+  "bundle": {
+    "identifier": "com.example.tauriapp",
+    "name": "TauriApp"
   },
-  "tauri": {
-    "bundle": {
-      "identifier": "com.example.tauriapp",
-      "name": "TauriApp"
-    },
-    "window": {
-      "width": 800,
-      "height": 600,
-      "resizable": true
-    }
+  "window": {
+    "width": 800,
+    "height": 600,
+    "resizable": true
+  },
+  "build": {
+    "distDir": "../build",
+    "devPath": "http://localhost:3000"
   }
 }
