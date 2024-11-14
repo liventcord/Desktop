@@ -40,10 +40,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Find all binary files in the repo (excluding .git)
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: neutralino-app
+
+      - name: Find all binary files in the downloaded artifact
         id: find_binaries
         run: |
-          binaries=$(find . -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+          binaries=$(find neutralino-app/dist -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
           echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
           echo "Found binaries: $binaries"
 
