@@ -24,13 +24,12 @@ jobs:
           neu build --release
 
       - name: List neutralino-app directory contents
-        run: ls -R neutralino-app  # List contents of neutralino-app to verify file locations
+        run: ls -R neutralino-app  
 
       - name: Update Neutralino config to point to remote URL
         run: |
-          # Now we update the neutralino-config.json if it exists
           if [ -f neutralino-app/neutralino-config ]; then
-            sed -i 's#"url": "http://localhost:3000"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino-config.json
+            sed -i 's#"url": "http://localhost:3000"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino-config
           else
             echo "neutralino-config.json not found!"
             exit 1
