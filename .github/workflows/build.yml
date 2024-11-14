@@ -50,7 +50,6 @@ jobs:
       - name: Map expected binaries directly (no extension changes)
         id: map_binaries
         run: |
-          # Define the full paths of expected binaries directly without renaming
           binaries=(
             "neutralino-app/neutralino-app/dist/neutralino-app-linux_arm64"
             "neutralino-app/neutralino-app/dist/neutralino-app-linux_armhf"
@@ -60,7 +59,6 @@ jobs:
             "neutralino-app/neutralino-app/dist/neutralino-app-mac_x64"
             "neutralino-app/neutralino-app/dist/neutralino-app-win_x64.exe"
           )
-          # Set the binaries as environment variable
           echo "BINARY_FILES=${binaries[*]}" >> $GITHUB_ENV
           echo "Found binaries: ${binaries[*]}"
 
@@ -82,3 +80,4 @@ jobs:
           asset_path: ${{ env.BINARY_FILES }}
           asset_name: ${{ env.BINARY_FILES }}
           asset_content_type: application/octet-stream
+          token: ${{ secrets.GITHUB_TOKEN }}
