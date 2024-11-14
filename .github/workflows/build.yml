@@ -60,23 +60,27 @@ jobs:
             done
           ' bash {} +
 
-      - name: Find valid binary files
+      - name: Specify release files based on platform regex
         id: find_binaries
         run: |
-          # Find binaries by extension and by checking for executable permissions
-          valid_binaries=$(find neutralino-app -type f \( -iname "*.exe" -o -iname "*.bin" -o -iname "*.tar" -o -iname "*.zip" -o -iname "*.gz" \) -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+          # Define release files to be included in the release
+          release_files="neutralino-app/neutralino-app-win_x64.exe
+          neutralino-app/neutralino-app-mac_arm64
+          neutralino-app/neutralino-app-mac_universal
+          neutralino-app/neutralino-app-linux_armhf
+          neutralino-app/neutralino-app-linux_x64
+          neutralino-app/neutralino-app-mac_x64"
 
-          # Include executables (even without extensions, for Linux/macOS)
-          executables_no_extension=$(find neutralino-app -type f -exec file {} \; | grep -i 'executable' | cut -d: -f1)
+          # Ensure files exist and collect them into a list
+          valid_binaries=""
+          for file in $release_files; do
+            if [[ -f "$file" ]]; then
+              valid_binaries="$valid_binaries $file"
+            fi
+          done
 
-          # Combine both lists
-          binaries="$valid_binaries $executables_no_extension"
-
-          # Filter out any invalid or non-executable files (like directories or files with weird formats)
-          valid_binaries_final=$(echo "$binaries" | grep -v -E '\.tar|\.zip|\.gz$|\.exe$|\.bin$|\.dmg$' || true)
-
-          echo "BINARY_FILES=$valid_binaries_final" >> $GITHUB_ENV
-          echo "Found valid binaries: $valid_binaries_final"
+          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
+          echo "Found valid binaries: $valid_binaries"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
