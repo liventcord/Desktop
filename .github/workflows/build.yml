@@ -24,6 +24,10 @@ jobs:
         run: |
           npm install -g @neutralinojs/neu
 
+      - name: Clean up previous app directory (if exists)
+        run: |
+          rm -rf neutralino-app
+
       - name: Create Neutralino Project
         run: |
           neu create neutralino-app
@@ -44,6 +48,9 @@ jobs:
             },
             "logging": {
               "enabled": true
+            },
+            "cli": {
+              "distributionPath": "dist"
             }
           }' > neutralino-app/neutralino.config.json
 
