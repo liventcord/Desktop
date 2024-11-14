@@ -55,11 +55,11 @@ jobs:
           name: neutralino-app
 
       - name: List downloaded files
-        run: ls -R neutralino-app  # Verify the artifact is downloaded correctly
+        run: ls -R  # List files in the root directory to see the downloaded artifact contents
 
       - name: Extract compressed files
         run: |
-          cd neutralino-app
+          # Assuming artifact is downloaded to the current directory
           find . -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
             for file; do
               case "$file" in
@@ -76,5 +76,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: neutralino-app/dist/*.zip  # Upload only the .zip files to the release
+          files: ./*.zip  # Upload all .zip files to the release
           token: ${{ secrets.GITHUB_TOKEN }}
