@@ -74,8 +74,7 @@ jobs:
       - name: Upload release assets
         run: |
           RELEASE_ID=${{ steps.create_release.outputs.release_id }}
-          ls -R neutralino-app/dist/
-          ls -R neutralino-app/dist/neutralino-app
+          ls -R
       
           # Upload each file in the directory
           for file in neutralino-app/dist/neutralino-app/*; do
