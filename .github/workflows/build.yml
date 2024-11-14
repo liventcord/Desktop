@@ -18,11 +18,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # You can adjust the version if needed
+          node-version: '16'
 
       - name: Install Neutralino CLI
         run: |
-          npm install -g @neutralinojs/neu  # Correct CLI package for Neutralino.js
+          npm install -g @neutralinojs/neu
 
       - name: Create Neutralino Project
         run: |
@@ -31,7 +31,6 @@ jobs:
 
       - name: Modify the Neutralino Config
         run: |
-          cd neutralino-app
           echo '{
             "applicationId": "com.example.neutrolinoapp",
             "version": "1.0.0",
@@ -46,7 +45,7 @@ jobs:
             "logging": {
               "enabled": true
             }
-          }' > neutralino.config.json
+          }' > neutralino-app/neutralino.config.json
 
       - name: Build Neutralino App
         run: |
@@ -57,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/build/*  # Path to the built files
+          path: neutralino-app/dist/*  # Path to the distribution directory after build
 
   release:
     name: Create GitHub release
@@ -81,6 +80,6 @@ jobs:
         uses: gh action/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: neutralino-app/build/*  # Path to the built artifact
+          asset_path: neutralino-app/dist/*  # Path to the built assets in the dist directory
           asset_name: neutralino-app-linux.zip
           asset_content_type: application/zip
