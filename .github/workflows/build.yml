@@ -73,12 +73,8 @@ jobs:
         id: find_files
         run: |
           files=$(find neutralino-app -type f ! -path './.git/*')
-          files_array=()
-          while IFS= read -r file; do
-            files_array+=("$file")
-          done <<< "$files"
-          echo "FILES=${files_array[@]}" >> $GITHUB_ENV
-          echo "Found files: ${files_array[@]}"
+          echo "FILES=$files" >> $GITHUB_ENV
+          echo "Found files: $files"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
@@ -86,5 +82,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: ${{ env.FILES }}
+          files: ${{ steps.find_files.outputs.files }}
           token: ${{ secrets.GITHUB_TOKEN }}
