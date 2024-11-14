@@ -14,14 +14,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Node.js (if your project needs it)
+    - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # specify the version your project needs
-
+        node-version: '19' 
     - name: Build your app (if applicable)
       run: |
-        # Replace this with the actual build command for your project
         npm install
         npm run build
 
