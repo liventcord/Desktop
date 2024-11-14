@@ -35,15 +35,19 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: Debug: Print all contents of current directory
+        run: |
+          ls -R # Print all contents of the current directory and its subdirectories
+
       - name: Check dist directory
         run: |
-          ls -R neutralino-app/dist  # Debugging step to verify files are in the dist directory
+          ls -R neutralino-app/dist  # Debugging step to check contents of dist directory
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*  # Upload all files in dist directory
+          path: neutralino-app/dist/*  # Ensure path is correct based on the build output
 
   release:
     name: Create GitHub release
@@ -60,4 +64,4 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: "This is the release of the Neutralino app"
-          files: neutralino-app/dist/*  # This uploads all files in dist directory (like the binaries)
+          files: neutralino-app/dist/*  # Ensure this matches the output directory of your build
