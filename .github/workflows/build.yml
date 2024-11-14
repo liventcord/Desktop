@@ -50,7 +50,7 @@ jobs:
 
       - name: Extract compressed files
         run: |
-          find neutralino-app/dist -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
+          find neutralino-app -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
             for file; do
               case "$file" in
                 *.zip) unzip "$file" -d "${file%.zip}" ;;
@@ -63,7 +63,7 @@ jobs:
       - name: Find all binary files in the extracted content
         id: find_binaries
         run: |
-          binaries=$(find neutralino-app/dist -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+          binaries=$(find neutralino-app -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
           echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
           echo "Found binaries: $binaries"
 
