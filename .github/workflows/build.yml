@@ -24,50 +24,21 @@ jobs:
         run: |
           npm install -g @neutralinojs/neu
 
-      - name: Clean up previous app directory (if exists)
-        run: |
-          rm -rf neutralino-app
-
       - name: Create Neutralino Project
         run: |
-          neu create neutralino-app
+          neu create neutralino-app  # This will automatically generate the necessary config
           cd neutralino-app
-
-      - name: Modify the Neutralino Config
-        run: |
-          echo '{
-            "applicationId": "com.example.neutrolinoapp",
-            "version": "1.0.0",
-            "defaultWidth": 800,
-            "defaultHeight": 600,
-            "port": 0,
-            "url": "https://example.com",
-            "window": {
-              "title": "NeutralinoApp",
-              "resizable": true
-            },
-            "logging": {
-              "enabled": true
-            },
-            "cli": {
-              "distributionPath": "dist"
-            }
-          }' > neutralino-app/neutralino.config.json
 
       - name: Build Neutralino App
         run: |
           cd neutralino-app
           neu build --release
 
-      - name: Verify dist contents
-        run: |
-          ls -R neutralino-app/dist
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*  # Path to the distribution directory after build
+          path: neutralino-app/dist/*  # Path to the built files
 
   release:
     name: Create GitHub release
@@ -82,14 +53,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref }}  # Correct 'name' input
+          release_name: Release ${{ github.ref }}
           body: "This is the release of the Neutralino app"
-          draft: false
-          prerelease: false
-          files: neutralino-app/dist/*  # Correct 'files' input
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          files: neutralino-app/dist/*  # Path to the built assets in the dist directory
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: neutralino-app/dist/*  # Path to the built artifact
+          asset_name: neutralino-app-linux.zip  # Customize based on platform or needs
+          asset_content_type: application/zip
