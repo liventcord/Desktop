@@ -34,11 +34,15 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: Check dist directory
+        run: |
+          ls -R neutralino-app/dist  # Debugging step to check if files exist
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*
+          path: neutralino-app/dist/*  # Ensure path is correct based on the build output
 
   release:
     name: Create GitHub release
@@ -53,14 +57,14 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref }}  # Corrected input for release name
+          name: Release ${{ github.ref }}
           body: "This is the release of the Neutralino app"
-          files: neutralino-app/dist/*  # Ensure the path is correct for your built assets
+          files: neutralino-app/dist/*  # Ensure correct path to built files
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: neutralino-app/dist/*  # Path to the built artifact
-          asset_name: neutralino-app-linux.zip  # Customize based on platform or needs
+          asset_path: neutralino-app/dist/*  # Correct path to built artifact
+          asset_name: neutralino-app-linux.zip  # Customize as needed
           asset_content_type: application/zip
