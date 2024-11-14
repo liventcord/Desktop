@@ -70,8 +70,7 @@ jobs:
           executables_no_extension=$(find neutralino-app -type f -exec file {} \; | grep -i 'executable' | cut -d: -f1)
 
           # Combine both lists
-          binaries="$valid_binaries
-$executables_no_extension"
+          binaries="$valid_binaries $executables_no_extension"
 
           # Filter out any invalid or non-executable files (like directories or files with weird formats)
           valid_binaries_final=$(echo "$binaries" | grep -v -E '\.tar|\.zip|\.gz$|\.exe$|\.bin$|\.dmg$' || true)
