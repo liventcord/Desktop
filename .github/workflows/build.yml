@@ -66,14 +66,18 @@ jobs:
           # Find binaries by extension and by checking for executable permissions
           valid_binaries=$(find neutralino-app -type f \( -iname "*.exe" -o -iname "*.bin" -o -iname "*.tar" -o -iname "*.zip" -o -iname "*.gz" \) -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
 
-          # Include files that are executables but have no extensions (Linux/macOS)
+          # Include executables (even without extensions, for Linux/macOS)
           executables_no_extension=$(find neutralino-app -type f -exec file {} \; | grep -i 'executable' | cut -d: -f1)
 
-          # Combine both binary lists
-          binaries="$valid_binaries $executables_no_extension"
+          # Combine both lists
+          binaries="$valid_binaries
+$executables_no_extension"
 
-          echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
-          echo "Found binaries: $binaries"
+          # Filter out any invalid or non-executable files (like directories or files with weird formats)
+          valid_binaries_final=$(echo "$binaries" | grep -v -E '\.tar|\.zip|\.gz$|\.exe$|\.bin$|\.dmg$' || true)
+
+          echo "BINARY_FILES=$valid_binaries_final" >> $GITHUB_ENV
+          echo "Found valid binaries: $valid_binaries_final"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
