@@ -1,0 +1,9 @@
+[package]
+name = "liventcordclient-tauri"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+tauri = "1.0"  # Use the appropriate version based on your Tauri project
+
+[build-dependencies]
