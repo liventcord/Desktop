@@ -47,11 +47,4 @@ jobs:
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
           files: |
-            neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
-            neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf
-            neutralino-app/dist/neutralino-app/neutralino-app-linux_x64
-            neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64
-            neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
-            neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
-            neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
-            neutralino-app/dist/neutralino-app/resources.neu
+            $(find neutralino-app/dist -type f -exec echo {} \; | grep -E '\.(exe|linux|dmg|tar|zip)$')
