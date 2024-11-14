@@ -71,6 +71,8 @@ jobs:
           body: "Release of the Neutralino app"
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
@@ -79,3 +81,5 @@ jobs:
           asset_path: ${{ env.BINARY_FILES }}
           asset_name: ${{ env.BINARY_FILES }}
           asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
