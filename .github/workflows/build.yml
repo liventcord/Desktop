@@ -40,11 +40,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Find binaries to upload
+        id: find_binaries
+        run: |
+          binaries=$(find neutralino-app/dist -type f -exec echo {} \; | grep -E '\.(exe|linux|dmg|tar|zip)$')
+          echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: |
-            $(find neutralino-app/dist -type f -exec echo {} \; | grep -E '\.(exe|linux|dmg|tar|zip)$')
+          files: ${{ env.BINARY_FILES }}
+          token: ${{ secrets.GITHUB_TOKEN }}
