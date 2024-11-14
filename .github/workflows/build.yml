@@ -73,7 +73,7 @@ jobs:
           body: "Release of the Neutralino app"
           draft: false
           prerelease: false
-          # No need to pass token here, GitHub automatically handles it
+          auth: ${{ secrets.GITHUB_TOKEN }}  # Correct way to pass token for auth
 
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
@@ -82,4 +82,4 @@ jobs:
           asset_path: ${{ env.BINARY_FILES }}
           asset_name: ${{ env.BINARY_FILES }}
           asset_content_type: application/octet-stream
-          # Token is automatically provided by GitHub Actions
+          auth: ${{ secrets.GITHUB_TOKEN }}  # Pass token for authentication
