@@ -1,8 +1,13 @@
 {
+  "name": "LiventcordClient",
+  "version": "1.0.0",
   "scripts": {
     "tauri": {
-      "dev": "tauri dev",
+      "dev": "tauri dev", 
       "build": "tauri build"
     }
+  },
+  "dependencies": {
+    "tauri": "^2.1.0"
   }
 }
