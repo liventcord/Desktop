@@ -64,6 +64,8 @@ jobs:
         run: |
           binaries=$(find neutralino-app -type f ! -path './.git/*' -iname 'neutralino-app-*')
           valid_binaries=$(echo "$binaries" | grep -E '(\.exe|neutralino-app-linux|neutralino-app-mac|neutralino-app-win)')
+          # Special handling for mac_universal files
+          valid_binaries=$(echo "$valid_binaries" | grep -v 'neutralino-app-mac_universal')  # Remove mac_universal if causing issues
           echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
           echo "Found binaries: $valid_binaries"
 
