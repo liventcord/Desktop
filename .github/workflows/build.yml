@@ -23,6 +23,12 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: Update Neutralino config to point to remote URL
+        run: |
+          cd neutralino-app/src
+          # Modify the neutralino-config.json to point to a remote URL
+          sed -i 's/"url": "http:\/\/localhost:3000"/"url": "https:\/\/liventcord.bsite.net"/' neutralino-config.json
+
       - name: Check dist directory
         run: ls -R neutralino-app/dist
 
@@ -31,18 +37,17 @@ jobs:
           cd neutralino-app/dist
           for file in *; do
             if [[ ! "$file" =~ \.exe$ ]]; then
-              if [[ ! "$file" =~ \.zip$ ]]; then  # Check if it's not already a zip file
+              if [[ ! "$file" =~ \.zip$ ]]; then
                 zip -r "${file}.zip" "$file"
               fi
             fi
           done
 
-
       - name: Upload compressed files as artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*.zip  # Upload all .zip files
+          path: neutralino-app/dist/*.zip 
 
   release:
     needs: build
@@ -58,7 +63,7 @@ jobs:
           name: neutralino-app
 
       - name: List downloaded files
-        run: ls -R  # List files in the root directory to see the downloaded artifact contents
+        run: ls -R 
 
       - name: Extract compressed files
         run: |
@@ -79,5 +84,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: ./*.zip  # Upload all .zip files to the release
+          files: ./*.zip 
           token: ${{ secrets.GITHUB_TOKEN }}
