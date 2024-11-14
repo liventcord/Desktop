@@ -25,9 +25,7 @@ jobs:
 
       - name: Update Neutralino config to point to remote URL
         run: |
-          cd neutralino-app/src
-          # Modify the neutralino-config.json to point to a remote URL
-          sed -i 's/"url": "http:\/\/localhost:3000"/"url": "https:\/\/liventcord.bsite.net"/' neutralino-config.json
+          sed -i 's/"url": "http:\/\/localhost:3000"/"url": "https:\/\/liventcord.bsite.net/app"/' neutralino-app/neutralino-config.json
 
       - name: Check dist directory
         run: ls -R neutralino-app/dist
@@ -37,7 +35,7 @@ jobs:
           cd neutralino-app/dist
           for file in *; do
             if [[ ! "$file" =~ \.exe$ ]]; then
-              if [[ ! "$file" =~ \.zip$ ]]; then
+              if [[ ! "$file" =~ \.zip$ ]]; then 
                 zip -r "${file}.zip" "$file"
               fi
             fi
@@ -47,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*.zip 
+          path: neutralino-app/dist/*.zip
 
   release:
     needs: build
@@ -84,5 +82,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: ./*.zip 
+          files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
