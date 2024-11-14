@@ -73,10 +73,10 @@ jobs:
 
       - name: Upload release assets
         run: |
-          # Find all the files you want to upload in the dist directory
-          for file in neutralino-app/dist/neutralino-app/*; do
+          RELEASE_ID=${{ steps.create_release.outputs.release_id }}
+          for file in $(find neutralino-app/dist/neutralino-app -type f); do
             echo "Uploading $file"
-
+            
             # Upload each file to the release
             curl -X POST \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
