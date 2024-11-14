@@ -1,60 +1,87 @@
-name: Release Workflow
+name: Build and Release Neutralino.js App
 
 on:
   push:
-    tags:
-      - 'v*'  
+    branches:
+      - main
+
 permissions:
   contents: write
+
 jobs:
-  create_release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '19' 
-    - name: Build your app (if applicable)
-      run: |
-        npm install
-        npm run build
+      - name: Set up Node.js and install Neutralino CLI
+        run: |
+          npm install -g @neutralinojs/neu
+          neu create neutralino-app
+          cd neutralino-app
+          neu build --release
 
-    - name: Create a new release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: "Release ${{ github.ref }}"
-        body: "Release of the Neutralino app"
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check dist directory
+        run: ls -R neutralino-app/dist
 
-    - name: Upload release assets
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: neutralino-app/neutralino-app/dist/neutralino-app-linux_arm64
-        asset_name: neutralino-app-linux_arm64
-        asset_content_type: application/octet-stream
+      - name: Compress non-EXE files
+        run: |
+          cd neutralino-app/dist
+          for file in *; do
+            if [[ ! "$file" =~ \.exe$ ]]; then
+              zip -r "${file}.zip" "$file"
+            fi
+          done
 
-    - name: Upload release assets for other platforms
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: neutralino-app/neutralino-app/dist/neutralino-app-linux_armhf
-        asset_name: neutralino-app-linux_armhf
-        asset_content_type: application/octet-stream
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: neutralino-app
+          path: neutralino-app/dist/*
 
-    - name: Upload release assets for Windows
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: neutralino-app/neutralino-app/dist/neutralino-app-win_x64.exe
-        asset_name: neutralino-app-win_x64.exe
-        asset_content_type: application/octet-stream
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: neutralino-app
+
+      - name: List downloaded files
+        run: ls -R
+
+      - name: Extract compressed files
+        run: |
+          find neutralino-app -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
+            for file; do
+              case "$file" in
+                *.zip) unzip "$file" -d "${file%.zip}" ;;
+                *.tar) tar -xf "$file" -C "${file%.tar}" ;;
+                *.gz) gunzip "$file" ;;
+              esac
+            done
+          ' bash {} +
+
+      - name: Find all binary files in the extracted content
+        id: find_binaries
+        run: |
+          binaries=$(find neutralino-app -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+          valid_binaries=$(echo "$binaries" | grep -E '\.(exe|bin|tar|zip|gz)$')
+          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
+          echo "Found binaries: $valid_binaries"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: main
+          name: Release ${{ github.ref }}
+          body: "Release of the Neutralino app"
+          files: ${{ env.BINARY_FILES }}
+          token: ${{ secrets.GITHUB_TOKEN }}
