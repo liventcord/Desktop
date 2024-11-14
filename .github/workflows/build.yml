@@ -60,13 +60,21 @@ jobs:
             done
           ' bash {} +
 
-      - name: Find all binary files in the extracted content
+      - name: Find valid binary files
         id: find_binaries
         run: |
-          binaries=$(find neutralino-app -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
-          valid_binaries=$(echo "$binaries" | grep -E '\.(exe|bin|tar|zip|gz)$')
-          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
-          echo "Found binaries: $valid_binaries"
+          # Find binaries by extension and by checking for executable permissions
+          valid_binaries=$(find neutralino-app -type f \( -iname "*.exe" -o -iname "*.bin" -o -iname "*.tar" -o -iname "*.zip" -o -iname "*.gz" \) -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+
+          # Include files that are executables but have no extensions (Linux/macOS)
+          executables_no_extension=$(find neutralino-app -type f -exec file {} \; | grep -i 'executable' | cut -d: -f1)
+
+          # Combine both binary lists
+          binaries="$valid_binaries
+$executables_no_extension"
+
+          echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
+          echo "Found binaries: $binaries"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
