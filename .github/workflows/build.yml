@@ -21,30 +21,9 @@ jobs:
           npm install -g @neutralinojs/neu
           neu create neutralino-app
           cd neutralino-app
+          # Add a webview to the config
+          neu config set webview true
           neu build --release
-
-      - name: List neutralino-app directory contents
-        run: ls -R neutralino-app  # List contents of neutralino-app to verify file locations
-
-      - name: Verify neutralino.config.json content
-        run: |
-          # Display contents of neutralino.config.json to verify URL change
-          cat neutralino-app/neutralino.config.json
-
-      - name: Update Neutralino config to point to remote URL
-        run: |
-          # Modify the neutralino.config.json to point to the remote URL
-          if [ -f neutralino-app/neutralino.config.json ]; then
-            sed -i 's#"url": "http://localhost:3000"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino.config.json
-          else
-            echo "neutralino.config.json not found!"
-            exit 1
-          fi
-
-      - name: Verify URL update in neutralino.config.json
-        run: |
-          # Verify that the URL has been correctly updated in the config file
-          cat neutralino-app/neutralino.config.json
 
       - name: Check dist directory
         run: ls -R neutralino-app/dist
