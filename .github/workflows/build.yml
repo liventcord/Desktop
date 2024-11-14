@@ -70,7 +70,7 @@ jobs:
           neutralino-app/neutralino-app-linux_armhf \
           neutralino-app/neutralino-app-linux_x64 \
           neutralino-app/neutralino-app-mac_x64"
-
+      
           # Ensure files exist and collect them into a list
           valid_binaries=""
           for file in $release_files; do
@@ -78,10 +78,19 @@ jobs:
               valid_binaries="$valid_binaries $file"
             fi
           done
-
+      
           # Export the binaries as a space-separated string
           echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
           echo "Found valid binaries: $valid_binaries"
+      
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: main
+          name: Release ${{ github.ref }}
+          body: "Release of the Neutralino app"
+          files: ${{ env.BINARY_FILES }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
