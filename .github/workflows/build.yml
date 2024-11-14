@@ -70,8 +70,7 @@ jobs:
           executables_no_extension=$(find neutralino-app -type f -exec file {} \; | grep -i 'executable' | cut -d: -f1)
 
           # Combine both binary lists
-          binaries="$valid_binaries
-$executables_no_extension"
+          binaries="$valid_binaries $executables_no_extension"
 
           echo "BINARY_FILES=$binaries" >> $GITHUB_ENV
           echo "Found binaries: $binaries"
