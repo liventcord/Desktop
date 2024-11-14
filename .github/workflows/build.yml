@@ -1,65 +1,78 @@
-name: Build and Release
+name: Build and Release Neutralino.js App
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Set up Node.js and install Neutralino CLI
+        run: |
+          npm install -g @neutralinojs/neu
+          neu create neutralino-app
+          cd neutralino-app
+          neu build --release
 
-    - name: Install Dependencies
-      run: npm install -g @neutralinojs/neu
+      - name: Check dist directory
+        run: ls -R neutralino-app/dist
 
-    - name: Initialize NeutralinoJS App
-      run: |
-        neu init neutralino-app --template neutralinojs-minimal
-        cd neutralino-app
-        neu install
-        neu update
-        neu build
-
-    - name: Bundle NeutralinoJS App
-      run: |
-        neu build
-        ls -R neutralino-app/dist
-
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: neutralino-app
-        path: neutralino-app/dist/neutralino-app/*
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: neutralino-app
+          path: neutralino-app/dist/*
 
   release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Download Build Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: neutralino-app
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: neutralino-app
 
-    - name: List Files in Artifact
-      run: ls -R neutralino-app
+      - name: List downloaded files
+        run: ls -R
 
-    - name: Upload Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: neutralino-app/neutralino-app-win_x64.exe, neutralino-app/neutralino-app-linux_x64, neutralino-app/neutralino-app-mac_x64
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract compressed files
+        run: |
+          find neutralino-app -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
+            for file; do
+              case "$file" in
+                *.zip) unzip "$file" -d "${file%.zip}" ;;
+                *.tar) tar -xf "$file" -C "${file%.tar}" ;;
+                *.gz) gunzip "$file" ;;
+              esac
+            done
+          ' bash {} +
+
+      - name: Find all binary files in the extracted content
+        id: find_binaries
+        run: |
+          binaries=$(find neutralino-app -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
+          valid_binaries=$(echo "$binaries" | grep -E '\.(exe|bin|tar|zip|gz)$')
+          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
+          echo "Found binaries: $valid_binaries"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: main
+          name: Release ${{ github.ref }}
+          body: "Release of the Neutralino app"
+          files: ${{ env.BINARY_FILES }}
+          token: ${{ secrets.GITHUB_TOKEN }}
