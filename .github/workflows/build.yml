@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Neutralino CLI
         run: |
-          npm install -g @neutralinojs/cli
+          npm install -g @neutralinojs/neu  # Correct CLI package for Neutralino.js
 
       - name: Create Neutralino Project
         run: |
