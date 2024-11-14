@@ -78,13 +78,14 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          name: Release ${{ github.ref }}  # Correct 'name' input
+          body: "This is the release of the Neutralino app"
           draft: false
           prerelease: false
-          body: "This is the release of the Neutralino app"
+          files: neutralino-app/dist/*  # Correct 'files' input
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          assets: neutralino-app/dist/*  # Path to the built assets in the dist directory
+          files: neutralino-app/dist/*  # Path to the built assets in the dist directory
