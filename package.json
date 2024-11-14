@@ -1,8 +1,8 @@
 {
   "scripts": {
     "tauri": {
-      "dev": "tauri dev",  // Starts development mode with Tauri
-      "build": "tauri build"  // Build the app for production
+      "dev": "tauri dev",
+      "build": "tauri build"
     }
   }
 }
