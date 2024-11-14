@@ -46,51 +46,7 @@ jobs:
           name: neutralino-app
 
       - name: List downloaded files
-        run: ls -R
-
-      - name: Extract compressed files
-        run: |
-          find neutralino-app -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
-            for file; do
-              case "$file" in
-                *.zip) unzip "$file" -d "${file%.zip}" ;;
-                *.tar) tar -xf "$file" -C "${file%.tar}" ;;
-                *.gz) gunzip "$file" ;;
-              esac
-            done
-          ' bash {} +
-
-      - name: Specify release files based on platform regex
-        id: find_binaries
-        run: |
-          # Define release files to be included in the release
-          release_files="neutralino-app/neutralino-app-win_x64.exe \
-          neutralino-app/neutralino-app-mac_arm64 \
-          neutralino-app/neutralino-app-mac_universal \
-          neutralino-app/neutralino-app-linux_armhf \
-          neutralino-app/neutralino-app-linux_x64 \
-          neutralino-app/neutralino-app-mac_x64"
-      
-          # Ensure files exist and collect them into a list
-          valid_binaries=""
-          for file in $release_files; do
-            if [[ -f "$file" ]]; then
-              valid_binaries="$valid_binaries $file"
-            fi
-          done
-      
-          # Export the binaries as a space-separated string
-          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
-          echo "Found valid binaries: $valid_binaries"
-      
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: main
-          name: Release ${{ github.ref }}
-          body: "Release of the Neutralino app"
-          files: ${{ env.BINARY_FILES }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: ls -R neutralino-app
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
@@ -98,5 +54,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: ${{ env.BINARY_FILES }}
+          files: neutralino-app/dist/*
           token: ${{ secrets.GITHUB_TOKEN }}
