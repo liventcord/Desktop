@@ -26,7 +26,7 @@ jobs:
 
       - name: Create Neutralino Project
         run: |
-          neu create neutralino-app --template=default  # Create a new Neutralino app
+          neu create neutralino-app
           cd neutralino-app
 
       - name: Modify the Neutralino Config
