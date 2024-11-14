@@ -60,4 +60,4 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: "This is the release of the Neutralino app"
-          files: neutralino-app/dist/*
+          files: neutralino-app/dist/*  # Uploads the compiled application binaries
