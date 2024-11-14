@@ -26,7 +26,7 @@ jobs:
       - name: Check dist directory
         run: ls -R neutralino-app/dist
 
-      - name: Compress non-EXE files
+      - name: Compress non-EXE files into zip
         run: |
           cd neutralino-app/dist
           for file in *; do
@@ -35,11 +35,11 @@ jobs:
             fi
           done
 
-      - name: Upload Build Artifact
+      - name: Upload compressed files as artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*
+          path: neutralino-app/dist/*.zip  # Upload all .zip files
 
   release:
     needs: build
@@ -69,18 +69,11 @@ jobs:
             done
           ' bash {} +
 
-      - name: Find all files (binaries and compressed)
-        id: find_files
-        run: |
-          files=$(find neutralino-app -type f ! -path './.git/*')
-          echo "FILES=$files" >> $GITHUB_ENV
-          echo "Found files: $files"
-
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: ${{ steps.find_files.outputs.files }}
+          files: neutralino-app/dist/*.zip  # Upload only the .zip files to the release
           token: ${{ secrets.GITHUB_TOKEN }}
