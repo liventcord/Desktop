@@ -51,7 +51,7 @@ jobs:
       - name: Build Neutralino App
         run: |
           cd neutralino-app
-          neu build --platform linux  # You can specify other platforms (win, mac) as needed
+          neu build --release
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
