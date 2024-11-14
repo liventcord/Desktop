@@ -1,0 +1,86 @@
+name: Build and Release Neutralino.js App
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # You can adjust the version if needed
+
+      - name: Install Neutralino CLI
+        run: |
+          npm install -g @neutralinojs/cli
+
+      - name: Create Neutralino Project
+        run: |
+          neu create neutralino-app --template=default  # Create a new Neutralino app
+          cd neutralino-app
+
+      - name: Modify the Neutralino Config
+        run: |
+          cd neutralino-app
+          echo '{
+            "applicationId": "com.example.neutrolinoapp",
+            "version": "1.0.0",
+            "defaultWidth": 800,
+            "defaultHeight": 600,
+            "port": 0,
+            "url": "https://example.com",
+            "window": {
+              "title": "NeutralinoApp",
+              "resizable": true
+            },
+            "logging": {
+              "enabled": true
+            }
+          }' > neutralino.config.json
+
+      - name: Build Neutralino App
+        run: |
+          cd neutralino-app
+          neu build --platform linux  # You can specify other platforms (win, mac) as needed
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: neutralino-app
+          path: neutralino-app/build/*  # Path to the built files
+
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create GitHub release
+        uses: gh action/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: "This is the release of the Neutralino app"
+
+      - name: Upload release assets
+        uses: gh action/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: neutralino-app/build/*  # Path to the built artifact
+          asset_name: neutralino-app-linux.zip
+          asset_content_type: application/zip
