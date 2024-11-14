@@ -47,14 +47,22 @@ jobs:
       - name: List downloaded files
         run: ls -R
 
-      - name: Find all binary files in the downloaded content
-        id: find_binaries
+      - name: Map expected binaries directly
+        id: map_binaries
         run: |
-          # Only include the packaged binary files, not unzipping
-          binaries=$(find neutralino-app -type f ! -path './.git/*' -iname '*.zip' -o -iname '*.tar' -o -iname '*.gz' -o -iname 'neutralino-app-*')
-          valid_binaries=$(echo "$binaries" | grep -E '(\.exe|neutralino-app-linux|neutralino-app-mac|neutralino-app-win)')
-          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
-          echo "Found binaries: $valid_binaries"
+          # Directly define the expected files based on known patterns
+          binaries=(
+            "neutralino-app/neutralino-app-linux_arm64"
+            "neutralino-app/neutralino-app-linux_armhf"
+            "neutralino-app/neutralino-app-linux_x64"
+            "neutralino-app/neutralino-app-mac_arm64"
+            "neutralino-app/neutralino-app-mac_universal"
+            "neutralino-app/neutralino-app-mac_x64"
+            "neutralino-app/neutralino-app-win_x64.exe"
+          )
+          # Set the binaries as environment variable
+          echo "BINARY_FILES=${binaries[*]}" >> $GITHUB_ENV
+          echo "Found binaries: ${binaries[*]}"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
