@@ -31,9 +31,12 @@ jobs:
           cd neutralino-app/dist
           for file in *; do
             if [[ ! "$file" =~ \.exe$ ]]; then
-              zip -r "${file}.zip" "$file"
+              if [[ ! "$file" =~ \.zip$ ]]; then  # Check if it's not already a zip file
+                zip -r "${file}.zip" "$file"
+              fi
             fi
           done
+
 
       - name: Upload compressed files as artifacts
         uses: actions/upload-artifact@v3
