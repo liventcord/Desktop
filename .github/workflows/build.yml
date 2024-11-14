@@ -69,13 +69,12 @@ jobs:
             done
           ' bash {} +
 
-      - name: Find all binary files in the extracted content
-        id: find_binaries
+      - name: Find all files (binaries and compressed)
+        id: find_files
         run: |
-          binaries=$(find neutralino-app -type f ! -path './.git/*' -exec file --mime-type {} \; | grep -E 'application/(x-tar|zip|gzip|octet-stream|x-7z-compressed|x-dosexec|x-msdownload)' | cut -d: -f1)
-          valid_binaries=$(echo "$binaries" | grep -E '\.(exe|bin|tar|zip|gz)$')
-          echo "BINARY_FILES=$valid_binaries" >> $GITHUB_ENV
-          echo "Found binaries: $valid_binaries"
+          files=$(find neutralino-app -type f ! -path './.git/*')
+          echo "FILES=$files" >> $GITHUB_ENV
+          echo "Found files: $files"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
@@ -83,5 +82,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino app"
-          files: ${{ env.BINARY_FILES }}
+          files: ${{ env.FILES }}
           token: ${{ secrets.GITHUB_TOKEN }}
