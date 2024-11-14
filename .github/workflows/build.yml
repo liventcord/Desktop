@@ -55,11 +55,12 @@ jobs:
           name: neutralino-app
 
       - name: List downloaded files
-        run: ls -R
+        run: ls -R neutralino-app  # Verify the artifact is downloaded correctly
 
       - name: Extract compressed files
         run: |
-          find neutralino-app -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
+          cd neutralino-app
+          find . -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
             for file; do
               case "$file" in
                 *.zip) unzip "$file" -d "${file%.zip}" ;;
