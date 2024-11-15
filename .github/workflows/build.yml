@@ -26,13 +26,20 @@ jobs:
 
       - name: Copy custom icon to resources/icons folder
         run: |
-          cp ./resources/icon.png neutralino-app/resources/icon.png
+          cp ./resources/icon.png neutralino-app/resources/icons/icon.png
 
-      - name: Update Neutralino Config for External URL
+      - name: Create App.js (main entry point)
+        run: |
+          mkdir -p neutralino-app/src/js
+          echo "const icon = '/resources/icons/icon.png';" > neutralino-app/src/js/App.js
+          echo "await Neutralino.window.setIcon(icon);" >> neutralino-app/src/js/App.js
+          echo "await Neutralino.window.open({url: 'https://leventcord.bsite.net/app', fullscreen: false, width: 800, height: 600, resizable: true});" >> neutralino-app/src/js/App.js
+
+      - name: Update Neutralino Config for External URL and Resources Path
         run: |
           if [ -f neutralino-app/neutralino.config.json ]; then
             echo '{
-                "applicationId": "org.yourdomain.app",
+                "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
                 "url": "https://leventcord.bsite.net/app",
