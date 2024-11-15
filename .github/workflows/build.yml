@@ -76,18 +76,20 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Verify the Build Output
-        run: |
-          ls -la neutralino-app/dist
-
-      - name: Extract Build Artifacts
+      - name: Check Build Output Directory
         run: |
           cd neutralino-app/dist
-          if [ -f neutralino-app.zip ]; then
+          echo "Listing contents of dist directory:"
+          ls -la
+
+      - name: Extract Build Artifacts (if found)
+        run: |
+          cd neutralino-app/dist
+          if [ -f neutralino-app-release.zip ]; then
             mkdir extracted
-            unzip neutralino-app.zip -d extracted/
+            unzip neutralino-app-release.zip -d extracted/
           else
-            echo "neutralino-app.zip not found!"
+            echo "neutralino-app-release.zip not found!"
             exit 1
           fi
 
