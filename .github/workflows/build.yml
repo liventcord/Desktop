@@ -76,18 +76,30 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Compress Only Necessary Files
+      - name: Compress Each Build Option Separately
         run: |
           cd neutralino-app/dist
-          # Remove any unnecessary duplicate zip files (like neutralino-app-release.zip)
-          rm -f neutralino-app-release.zip
-          zip -r neutralino-app.zip .
-
+          # Create separate zip files for each platform
+          zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64
+          zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf
+          zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64
+          zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64
+          zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal
+          zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64
+          zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe
+          
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/neutralino-app.zip
+          path: |
+            neutralino-app/dist/neutralino-app-linux_arm64.zip
+            neutralino-app/dist/neutralino-app-linux_armhf.zip
+            neutralino-app/dist/neutralino-app-linux_x64.zip
+            neutralino-app/dist/neutralino-app-mac_arm64.zip
+            neutralino-app/dist/neutralino-app-mac_universal.zip
+            neutralino-app/dist/neutralino-app-mac_x64.zip
+            neutralino-app/dist/neutralino-app-win_x64.zip
 
   release:
     needs: build
@@ -97,7 +109,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Build Artifact
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app
@@ -108,5 +120,12 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app.zip
+          files: |
+            neutralino-app-linux_arm64.zip
+            neutralino-app-linux_armhf.zip
+            neutralino-app-linux_x64.zip
+            neutralino-app-mac_arm64.zip
+            neutralino-app-mac_universal.zip
+            neutralino-app-mac_x64.zip
+            neutralino-app-win_x64.zip
           token: ${{ secrets.GITHUB_TOKEN }}
