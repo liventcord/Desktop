@@ -80,10 +80,10 @@ jobs:
         run: |
           cd neutralino-app/dist
           for platform in $(ls -d */); do
-            cd "$platform"
-            zip -r "../${platform%/}.zip" .
-            cd ..
+            # Change to the platform's directory and zip its contents
+            zip -r "${platform%/}.zip" "$platform"/*
           done
+
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
