@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -79,7 +80,9 @@ jobs:
         run: |
           cd neutralino-app/dist
           for platform in $(ls -d */); do
-            zip -r "${platform%/}.zip" "$platform"
+            cd "$platform"
+            zip -r "../${platform%/}.zip" .
+            cd ..
           done
 
       - name: Upload Build Artifacts
@@ -87,3 +90,25 @@ jobs:
         with:
           name: neutralino-app
           path: neutralino-app/dist/*.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: neutralino-app
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: main
+          name: Release ${{ github.ref }}
+          body: "Release of the Neutralino webview app of liventcord"
+          files: neutralino-app/dist/*.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
