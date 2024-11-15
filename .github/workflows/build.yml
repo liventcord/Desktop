@@ -22,9 +22,36 @@ jobs:
 
       - name: Create Neutralino.js App
         run: |
-          neu create neutralino-app --template minimal
-          cd neutralino-app
-          neu build --release
+          neu create neutralino-app
+
+      - name: Update Application Files
+        run: |
+          echo '<!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="UTF-8">
+              <title>NeutralinoJs</title>
+              <link rel="stylesheet" href="styles.css">
+          </head>
+          <body>
+              <div id="neutralinoapp">
+                  <h1 id="name"></h1>
+              </div>
+              <script src="js/neutralino.js"></script>
+              <script src="js/main.js"></script>
+          </body>
+          </html>' > neutralino-app/resources/index.html
+
+          echo 'body {
+              font-family: Arial, sans-serif;
+              text-align: center;
+              margin-top: 50px;
+          }' > neutralino-app/resources/styles.css
+
+          echo 'Neutralino.init();
+          Neutralino.os.getEnv("USER").then((env) => {
+              document.getElementById("name").innerText = `Hello, ${env}` || "NeutralinoJs";
+          });' > neutralino-app/resources/js/main.js
 
       - name: Update Neutralino config to point to remote URL
         run: |
@@ -35,7 +62,7 @@ jobs:
             exit 1
           fi
 
-      - name: Build App with Updated Config
+      - name: Build App
         run: |
           cd neutralino-app
           neu build --release
