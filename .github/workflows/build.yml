@@ -76,45 +76,18 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: List contents of dist folder (for debugging)
+      - name: Compress Only Necessary Files
         run: |
           cd neutralino-app/dist
-          ls -lR
-
-      - name: Compress Each Build Option Separately
-        run: |
-          cd neutralino-app/dist
-          # Debugging: Check existence of build directories first
-          echo "Checking for directories..."
-          ls -l
-          
-          # Create separate zip files for each platform if they exist
-          if [ -d "neutralino-app" ]; then
-            cd neutralino-app
-            if [ -f "neutralino-app-linux_arm64" ]; then zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64; fi
-            if [ -f "neutralino-app-linux_armhf" ]; then zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf; fi
-            if [ -f "neutralino-app-linux_x64" ]; then zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64; fi
-            if [ -f "neutralino-app-mac_arm64" ]; then zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64; fi
-            if [ -f "neutralino-app-mac_universal" ]; then zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal; fi
-            if [ -f "neutralino-app-mac_x64" ]; then zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64; fi
-            if [ -f "neutralino-app-win_x64.exe" ]; then zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe; fi
-          fi
-          
-          # Verify zip files were created
-          ls -l
+          # Remove any unnecessary duplicate zip files (like neutralino-app-release.zip)
+          rm -f neutralino-app-release.zip
+          zip -r neutralino-app.zip .
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: |
-            neutralino-app/dist/neutralino-app-linux_arm64.zip
-            neutralino-app/dist/neutralino-app-linux_armhf.zip
-            neutralino-app/dist/neutralino-app-linux_x64.zip
-            neutralino-app/dist/neutralino-app-mac_arm64.zip
-            neutralino-app/dist/neutralino-app-mac_universal.zip
-            neutralino-app/dist/neutralino-app-mac_x64.zip
-            neutralino-app/dist/neutralino-app-win_x64.zip
+          path: neutralino-app/dist/neutralino-app.zip
 
   release:
     needs: build
@@ -124,7 +97,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Build Artifacts
+      - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app
@@ -135,12 +108,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: |
-            neutralino-app-linux_arm64.zip
-            neutralino-app-linux_armhf.zip
-            neutralino-app-linux_x64.zip
-            neutralino-app-mac_arm64.zip
-            neutralino-app-mac_universal.zip
-            neutralino-app-mac_x64.zip
-            neutralino-app-win_x64.zip
+          files: neutralino-app.zip
           token: ${{ secrets.GITHUB_TOKEN }}
