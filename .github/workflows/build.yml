@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  # Add a manual trigger to create a release with specific tag (optional)
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -78,7 +80,6 @@ jobs:
 
       - name: Create zip files for each platform and include config and neu files
         run: |
-          # In case neu build did not zip automatically, manually zip all platform files
           zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
           zip neutralino-app-linux_armhf.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
           zip neutralino-app-linux_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_x64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
@@ -114,8 +115,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: main
-          name: Release ${{ github.ref }}
+          tag_name: v1.1.0
+          name: Release v1.1.0
           body: "Release of the Neutralino webview app of liventcord"
           files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
