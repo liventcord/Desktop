@@ -76,13 +76,17 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Compress Each Platform Build
+      - name: Compress Each Platform Build Into Dist Directory
         run: |
           cd neutralino-app/dist
-          # Compress each platform build directly into the dist folder
-          for platform in $(ls -d */); do
-            zip -r "../${platform%/}.zip" "$platform"
-          done
+          # Ensure zip files are placed inside the dist directory
+          zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64
+          zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf
+          zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64
+          zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64
+          zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal
+          zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64
+          zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
