@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -76,37 +75,15 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Compress Only Necessary Files
+      - name: Compress Each Platform Build
         run: |
           cd neutralino-app/dist
-          # Remove any unnecessary duplicate zip files (like neutralino-app-release.zip)
-          rm -f neutralino-app-release.zip
-          zip -r neutralino-app.zip .
+          for platform in linux_arm64 linux_armhf linux_x64 mac_arm64 mac_universal mac_x64 win_x64; do
+            zip -r "neutralino-app-${platform}.zip" "neutralino-app-${platform}"
+          done
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/neutralino-app.zip
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: neutralino-app
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: main
-          name: Release ${{ github.ref }}
-          body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: neutralino-app/dist/*.zip
