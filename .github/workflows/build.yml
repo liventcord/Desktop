@@ -76,16 +76,22 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Compress Build Artifacts
+      - name: List Build Directory Contents
         run: |
           cd neutralino-app/dist
-          zip -r neutralino-app.zip .
+          ls -R  # List all the build artifacts
 
-      - name: Upload Build Artifacts
+      - name: Upload Build Artifacts Individually
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/neutralino-app.zip
+          path: |
+            neutralino-app/dist/neutralino-app-linux_x64
+            neutralino-app/dist/neutralino-app-linux_arm64
+            neutralino-app/dist/neutralino-app-win_x64.exe
+            neutralino-app/dist/neutralino-app-mac_x64
+            neutralino-app/dist/resources.neu
+            neutralino-app/dist/resources/icons/*
 
   release:
     needs: build
@@ -100,11 +106,21 @@ jobs:
         with:
           name: neutralino-app
 
+      - name: List Downloaded Files
+        run: |
+          ls -R  # List files to verify downloaded artifacts
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app.zip
+          files: |
+            neutralino-app/dist/neutralino-app-linux_x64
+            neutralino-app/dist/neutralino-app-linux_arm64
+            neutralino-app/dist/neutralino-app-win_x64.exe
+            neutralino-app/dist/neutralino-app-mac_x64
+            neutralino-app/dist/resources.neu
+            neutralino-app/dist/resources/icons/*
           token: ${{ secrets.GITHUB_TOKEN }}
