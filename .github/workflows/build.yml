@@ -76,9 +76,11 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Compress Build Artifacts
+      - name: Compress Only Necessary Files
         run: |
           cd neutralino-app/dist
+          # Remove any unnecessary duplicate zip files (like neutralino-app-release.zip)
+          rm -f neutralino-app-release.zip
           zip -r neutralino-app.zip .
 
       - name: Upload Build Artifacts
