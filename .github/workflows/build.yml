@@ -79,12 +79,12 @@ jobs:
       - name: List Build Directory Contents
         run: |
           cd neutralino-app/dist
-          ls -R  # List all the build artifacts
+          ls -R  # List all the build artifacts to verify they exist
 
       - name: Upload Build Artifacts Individually
         uses: actions/upload-artifact@v3
         with:
-          name: neutralino-app
+          name: neutralino-app  # Ensure this name matches in the release job
           path: |
             neutralino-app/dist/neutralino-app-linux_x64
             neutralino-app/dist/neutralino-app-linux_arm64
@@ -104,7 +104,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
-          name: neutralino-app
+          name: neutralino-app  # This should match the artifact name in the build step
 
       - name: List Downloaded Files
         run: |
