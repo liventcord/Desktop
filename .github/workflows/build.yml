@@ -106,7 +106,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*.zip  # This line is corrected to use the right path
+          path: neutralino-app/dist/*.zip
 
   release:
     needs: build
@@ -127,5 +127,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app/dist/*.zip  # Corrected to reflect proper path
+          files: neutralino-app/dist/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
