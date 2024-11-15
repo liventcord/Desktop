@@ -76,16 +76,21 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Create .zip for Release
+      - name: Create individual zips for release
         run: |
-          cd neutralino-app/dist
-          zip -r neutralino-app.zip neutralino-app/
+          mkdir -p neutralino-app/dist/zips
+          cd neutralino-app/dist/neutralino-app
+          for file in *; do
+            if [ -f "$file" ]; then
+              zip "../zips/$file.zip" "$file"
+            fi
+          done
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: neutralino-app
-          path: neutralino-app/dist/neutralino-app.zip
+          name: neutralino-app-zips
+          path: neutralino-app/dist/zips/*.zip
 
   release:
     needs: build
@@ -98,9 +103,9 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
-          name: neutralino-app
+          name: neutralino-app-zips
 
-      - name: List files to check if zip is present
+      - name: List files to check if zips are present
         run: |
           tree
 
@@ -110,5 +115,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app/dist/neutralino-app.zip
+          files: neutralino-app/dist/zips/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
