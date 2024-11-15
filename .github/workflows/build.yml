@@ -1,4 +1,4 @@
-name: Build and Release Neutralino.js Client
+name: Build and Release Neutralino.js App
 
 on:
   push:
@@ -24,11 +24,11 @@ jobs:
         run: |
           neu create neutralino-app
 
-      - name: Copy custom icon to resources folder
+      - name: Copy custom icon to resources/icons folder
         run: |
           cp ./resources/icon.png neutralino-app/resources/icon.png
 
-      - name: Update Neutralino Config for External URL and Icon
+      - name: Update Neutralino Config for External URL
         run: |
           if [ -f neutralino-app/neutralino.config.json ]; then
             echo '{
@@ -51,12 +51,11 @@ jobs:
                 },
                 "modes": {
                     "window": {
-                        "title": "Neutralino.js Webview App",
+                        "title": "LiventCord",
                         "width": 800,
                         "height": 600,
                         "resizable": true,
-                        "fullscreen": false,
-                        "icon": "/resources/icon.png"
+                        "fullscreen": false
                     }
                 }
             }' > neutralino-app/neutralino.config.json
@@ -99,6 +98,6 @@ jobs:
         with:
           tag_name: main
           name: Release ${{ github.ref }}
-          body: "Release of the liventcord client"
+          body: "Release of the Neutralino webview app of liventcord"
           files: neutralino-app.zip
           token: ${{ secrets.GITHUB_TOKEN }}
