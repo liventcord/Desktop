@@ -79,47 +79,15 @@ jobs:
       - name: Compress and Prepare Platform-specific Zip Files
         run: |
           cd neutralino-app/dist
-          # Check if the platform directories exist before attempting to zip them
-          if [ -d "neutralino-app-linux_arm64" ]; then
-            zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64
-          else
-            echo "neutralino-app-linux_arm64 directory not found!"
-          fi
-          if [ -d "neutralino-app-linux_x64" ]; then
-            zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64
-          else
-            echo "neutralino-app-linux_x64 directory not found!"
-          fi
-          if [ -d "neutralino-app-linux_armhf" ]; then
-            zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf
-          else
-            echo "neutralino-app-linux_armhf directory not found!"
-          fi
-          if [ -d "neutralino-app-mac_arm64" ]; then
-            zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64
-          else
-            echo "neutralino-app-mac_arm64 directory not found!"
-          fi
-          if [ -d "neutralino-app-mac_universal" ]; then
-            zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal
-          else
-            echo "neutralino-app-mac_universal directory not found!"
-          fi
-          if [ -d "neutralino-app-mac_x64" ]; then
-            zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64
-          else
-            echo "neutralino-app-mac_x64 directory not found!"
-          fi
-          if [ -f "neutralino-app-win_x64.exe" ]; then
-            zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe
-          else
-            echo "neutralino-app-win_x64.exe not found!"
-          fi
-          if [ -f "resources.neu" ]; then
-            zip -r resources.neu.zip resources.neu
-          else
-            echo "resources.neu not found!"
-          fi
+          # Ensure the directories and files exist before zipping
+          zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64 || echo "neutralino-app-linux_arm64.zip not found"
+          zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64 || echo "neutralino-app-linux_x64.zip not found"
+          zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf || echo "neutralino-app-linux_armhf.zip not found"
+          zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64 || echo "neutralino-app-mac_arm64.zip not found"
+          zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal || echo "neutralino-app-mac_universal.zip not found"
+          zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64 || echo "neutralino-app-mac_x64.zip not found"
+          zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe || echo "neutralino-app-win_x64.zip not found"
+          zip -r resources.neu.zip resources.neu || echo "resources.neu.zip not found"
 
       - name: Upload Platform-specific Build Artifacts
         uses: actions/upload-artifact@v3
@@ -147,6 +115,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app
+
+      - name: List downloaded artifact files
+        run: |
+          ls -l
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
