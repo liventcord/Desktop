@@ -24,39 +24,10 @@ jobs:
         run: |
           neu create neutralino-app
 
-      - name: Update Application Files
-        run: |
-          echo '<!DOCTYPE html>
-          <html>
-          <head>
-              <meta charset="UTF-8">
-              <title>NeutralinoJs</title>
-              <link rel="stylesheet" href="styles.css">
-          </head>
-          <body>
-              <div id="neutralinoapp">
-                  <h1 id="name"></h1>
-              </div>
-              <script src="js/neutralino.js"></script>
-              <script src="js/main.js"></script>
-          </body>
-          </html>' > neutralino-app/resources/index.html
-
-          echo 'body {
-              font-family: Arial, sans-serif;
-              text-align: center;
-              margin-top: 50px;
-          }' > neutralino-app/resources/styles.css
-
-          echo 'Neutralino.init();
-          Neutralino.os.getEnv("USER").then((env) => {
-              document.getElementById("name").innerText = `Hello, ${env}` || "NeutralinoJs";
-          });' > neutralino-app/resources/js/main.js
-
-      - name: Update Neutralino config to point to remote URL
+      - name: Update Neutralino config to point to external URL
         run: |
           if [ -f neutralino-app/neutralino.config.json ]; then
-            sed -i 's#"url": "http://localhost"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino.config.json
+            sed -i 's#"url": "http://localhost"#"url": "https://example.com"#' neutralino-app/neutralino.config.json
           else
             echo "neutralino.config.json not found!"
             exit 1
@@ -96,6 +67,6 @@ jobs:
         with:
           tag_name: main
           name: Release ${{ github.ref }}
-          body: "Release of the Neutralino app with remote URL webview."
+          body: "Release of the Neutralino app pointing to https://example.com."
           files: neutralino-app.zip
           token: ${{ secrets.GITHUB_TOKEN }}
