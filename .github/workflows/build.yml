@@ -78,8 +78,8 @@ jobs:
       - name: Compress Each Platform Build
         run: |
           cd neutralino-app/dist
-          for platform in linux_arm64 linux_armhf linux_x64 mac_arm64 mac_universal mac_x64 win_x64; do
-            zip -r "neutralino-app-${platform}.zip" "neutralino-app-${platform}"
+          for platform in $(ls -d */); do
+            zip -r "${platform%/}.zip" "$platform"
           done
 
       - name: Upload Build Artifacts
