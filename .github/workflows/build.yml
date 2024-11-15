@@ -76,28 +76,17 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: List files in dist directory
-        run: |
-          tree neutralino-app/
-
-
-      - name: Compress Each Platform Build Into Dist Directory
+      - name: Compress Only Necessary Files
         run: |
           cd neutralino-app/dist
-          # Ensure zip files are placed inside the dist directory
-          zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64
-          zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf
-          zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64
-          zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64
-          zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal
-          zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64
-          zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe
+          rm -f neutralino-app-release.zip
+          zip -r neutralino-app.zip .
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*.zip
+          path: neutralino-app/dist/neutralino-app.zip
 
   release:
     needs: build
@@ -112,11 +101,15 @@ jobs:
         with:
           name: neutralino-app
 
+      - name: List files in dist/neutralino-app directory
+        run: |
+          ls -l neutralino-app/dist/neutralino-app/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app/dist/*.zip
+          files: ./neutralino-app/dist/neutralino-app/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
