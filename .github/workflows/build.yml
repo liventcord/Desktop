@@ -93,6 +93,11 @@ jobs:
           if [ -d "neutralino-app-mac_x64" ]; then zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64; fi
           if [ -f "neutralino-app-win_x64.exe" ]; then zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe; fi
 
+      - name: Verify Zip Files (for debugging)
+        run: |
+          cd neutralino-app/dist
+          ls -l
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
