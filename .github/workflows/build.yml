@@ -1,4 +1,4 @@
-name: Build and Release Neutralino.js App
+name: Build and Release Neutralino.js Client
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
                 "applicationId": "org.yourdomain.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "https://example.com",
+                "url": "https://leventcord.bsite.net/app",
                 "enableServer": true,
                 "nativeAllowList": [
                     "app.*",
@@ -99,6 +99,6 @@ jobs:
         with:
           tag_name: main
           name: Release ${{ github.ref }}
-          body: "Release of the Neutralino app pointing to https://example.com."
+          body: "Release of the liventcord client"
           files: neutralino-app.zip
           token: ${{ secrets.GITHUB_TOKEN }}
