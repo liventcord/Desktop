@@ -82,11 +82,20 @@ jobs:
           mkdir extracted
           unzip neutralino-app.zip -d extracted/
 
+      - name: Create Separate ZIP Files for Each Resource
+        run: |
+          cd neutralino-app/dist/extracted
+          for file in *; do
+            if [ -f "$file" ]; then
+              zip "../$file.zip" "$file"
+            fi
+          done
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/extracted/**
+          path: neutralino-app/dist/*.zip
 
   release:
     needs: build
@@ -96,7 +105,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Build Artifact
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app
@@ -107,5 +116,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app.zip
+          files: neutralino-app/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
