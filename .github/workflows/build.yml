@@ -16,25 +16,77 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up and build Neutralino.js app
+      - name: Set up Node.js and install Neutralino CLI
         run: |
           npm install -g @neutralinojs/neu
-          neu create neutralino-app
-          cp ./resources/icon.png neutralino-app/resources/icons/icon.png
-          echo "const icon = '/resources/icons/icon.png'; await Neutralino.window.setIcon(icon); await Neutralino.window.open({url: 'https://leventcord.bsite.net/app', fullscreen: false, width: 800, height: 600, resizable: true});" > neutralino-app/src/js/App.js
-          echo '{
-              "applicationId": "org.liventcord.app",
-              "url": "https://leventcord.bsite.net/app",
-              "cli": {"binaryName": "neutralino-app", "resourcesPath": "/resources", "distributionPath": "dist"},
-              "modes": {"window": {"title": "LiventCord", "width": 800, "height": 600, "resizable": true, "fullscreen": false}}
-          }' > neutralino-app/neutralino.config.json
-          cd neutralino-app && neu build --release
 
-      - name: Create and upload zip files
+      - name: Create Neutralino.js App
         run: |
-          cd neutralino-app/dist/neutralino-app
-          for file in *; do zip "../$file.zip" "$file"; done
-        working-directory: ./neutralino-app
+          neu create neutralino-app
+
+      - name: Copy custom icon to resources/icons folder
+        run: |
+          cp ./resources/icon.png neutralino-app/resources/icons/icon.png
+
+      - name: Create App.js (main entry point)
+        run: |
+          mkdir -p neutralino-app/src/js
+          echo "const icon = '/resources/icons/icon.png';" > neutralino-app/src/js/App.js
+          echo "await Neutralino.window.setIcon(icon);" >> neutralino-app/src/js/App.js
+          echo "await Neutralino.window.open({url: 'https://leventcord.bsite.net/app', fullscreen: false, width: 800, height: 600, resizable: true});" >> neutralino-app/src/js/App.js
+
+      - name: Update Neutralino Config for External URL and Resources Path
+        run: |
+          if [ -f neutralino-app/neutralino.config.json ]; then
+            echo '{
+                "applicationId": "org.liventcord.app",
+                "defaultMode": "window",
+                "port": 0,
+                "url": "https://leventcord.bsite.net/app",
+                "enableServer": true,
+                "nativeAllowList": [
+                    "app.*",
+                    "os.*",
+                    "debug.log"
+                ],
+                "globalVariables": {},
+                "cli": {
+                    "binaryName": "neutralino-app",
+                    "resourcesPath": "/resources",
+                    "extensionsPath": "/extensions",
+                    "distributionPath": "dist"
+                },
+                "modes": {
+                    "window": {
+                        "title": "LiventCord",
+                        "width": 800,
+                        "height": 600,
+                        "resizable": true,
+                        "fullscreen": false
+                    }
+                }
+            }' > neutralino-app/neutralino.config.json
+          else
+            echo "neutralino.config.json not found!"
+            exit 1
+          fi
+
+      - name: Build App
+        run: |
+          cd neutralino-app
+          neu build --release
+
+      - name: Create zip files for each platform
+        run: |
+          # In case neu build did not zip automatically, manually zip all platform files
+          zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
+          zip neutralino-app-linux_armhf.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf
+          zip neutralino-app-linux_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_x64
+          zip neutralino-app-mac_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64
+          zip neutralino-app-mac_universal.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
+          zip neutralino-app-mac_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
+          zip neutralino-app-win_x64.exe.zip neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
+          zip resources.neu.zip neutralino-app/dist/neutralino-app/resources.neu
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
@@ -54,6 +106,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app-zips
+
+      - name: List files to check if zips are present
+        run: |
+          ls -l
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
