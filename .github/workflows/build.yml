@@ -76,6 +76,11 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: List files in dist directory
+        run: |
+          tree neutralino-app/
+
+
       - name: Compress Each Platform Build Into Dist Directory
         run: |
           cd neutralino-app/dist
