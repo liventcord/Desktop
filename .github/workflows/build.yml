@@ -84,18 +84,23 @@ jobs:
       - name: Compress Each Build Option Separately
         run: |
           cd neutralino-app/dist
-          # Create separate zip files for each platform, checking if the directories exist first
-          if [ -d "neutralino-app-linux_arm64" ]; then zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64; fi
-          if [ -d "neutralino-app-linux_armhf" ]; then zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf; fi
-          if [ -d "neutralino-app-linux_x64" ]; then zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64; fi
-          if [ -d "neutralino-app-mac_arm64" ]; then zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64; fi
-          if [ -d "neutralino-app-mac_universal" ]; then zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal; fi
-          if [ -d "neutralino-app-mac_x64" ]; then zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64; fi
-          if [ -f "neutralino-app-win_x64.exe" ]; then zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe; fi
-
-      - name: Verify Zip Files (for debugging)
-        run: |
-          cd neutralino-app/dist
+          # Debugging: Check existence of build directories first
+          echo "Checking for directories..."
+          ls -l
+          
+          # Create separate zip files for each platform if they exist
+          if [ -d "neutralino-app" ]; then
+            cd neutralino-app
+            if [ -f "neutralino-app-linux_arm64" ]; then zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64; fi
+            if [ -f "neutralino-app-linux_armhf" ]; then zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf; fi
+            if [ -f "neutralino-app-linux_x64" ]; then zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64; fi
+            if [ -f "neutralino-app-mac_arm64" ]; then zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64; fi
+            if [ -f "neutralino-app-mac_universal" ]; then zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal; fi
+            if [ -f "neutralino-app-mac_x64" ]; then zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64; fi
+            if [ -f "neutralino-app-win_x64.exe" ]; then zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe; fi
+          fi
+          
+          # Verify zip files were created
           ls -l
 
       - name: Upload Build Artifacts
