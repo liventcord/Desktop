@@ -76,22 +76,17 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: List Build Directory Contents
+      - name: Extract Build Artifacts
         run: |
           cd neutralino-app/dist
-          ls -R  # List all the build artifacts to verify they exist
+          mkdir extracted
+          unzip neutralino-app.zip -d extracted/
 
-      - name: Upload Build Artifacts Individually
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: neutralino-app  # Ensure this name matches in the release job
-          path: |
-            neutralino-app/dist/neutralino-app-linux_x64
-            neutralino-app/dist/neutralino-app-linux_arm64
-            neutralino-app/dist/neutralino-app-win_x64.exe
-            neutralino-app/dist/neutralino-app-mac_x64
-            neutralino-app/dist/resources.neu
-            neutralino-app/dist/resources/icons/*
+          name: neutralino-app
+          path: neutralino-app/dist/extracted/**
 
   release:
     needs: build
@@ -104,11 +99,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
-          name: neutralino-app  # This should match the artifact name in the build step
-
-      - name: List Downloaded Files
-        run: |
-          ls -R  # List files to verify downloaded artifacts
+          name: neutralino-app
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -116,11 +107,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: |
-            neutralino-app/dist/neutralino-app-linux_x64
-            neutralino-app/dist/neutralino-app-linux_arm64
-            neutralino-app/dist/neutralino-app-win_x64.exe
-            neutralino-app/dist/neutralino-app-mac_x64
-            neutralino-app/dist/resources.neu
-            neutralino-app/dist/resources/icons/*
+          files: neutralino-app.zip
           token: ${{ secrets.GITHUB_TOKEN }}
