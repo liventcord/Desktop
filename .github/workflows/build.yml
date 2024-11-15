@@ -19,31 +19,37 @@ jobs:
       - name: Set up Node.js and install Neutralino CLI
         run: |
           npm install -g @neutralinojs/neu
-          neu create neutralino-app
+
+      - name: Create Neutralino.js App
+        run: |
+          neu create neutralino-app --template minimal
           cd neutralino-app
-          # Add a webview to the config
-          neu config set webview true
           neu build --release
 
-      - name: Check dist directory
-        run: ls -R neutralino-app/dist
+      - name: Update Neutralino config to point to remote URL
+        run: |
+          if [ -f neutralino-app/neutralino.config.json ]; then
+            sed -i 's#"url": "http://localhost"#"url": "https://liventcord.bsite.net/app"#' neutralino-app/neutralino.config.json
+          else
+            echo "neutralino.config.json not found!"
+            exit 1
+          fi
 
-      - name: Compress non-EXE files into zip
+      - name: Build App with Updated Config
+        run: |
+          cd neutralino-app
+          neu build --release
+
+      - name: Compress Build Artifacts
         run: |
           cd neutralino-app/dist
-          for file in *; do
-            if [[ ! "$file" =~ \.exe$ ]]; then
-              if [[ ! "$file" =~ \.zip$ ]]; then  # Check if it's not already a zip file
-                zip -r "${file}.zip" "$file"
-              fi
-            fi
-          done
+          zip -r neutralino-app.zip .
 
-      - name: Upload compressed files as artifacts
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/*.zip  # Upload all .zip files
+          path: neutralino-app/dist/neutralino-app.zip
 
   release:
     needs: build
@@ -58,27 +64,11 @@ jobs:
         with:
           name: neutralino-app
 
-      - name: List downloaded files
-        run: ls -R  # List files in the root directory to see the downloaded artifact contents
-
-      - name: Extract compressed files
-        run: |
-          # Assuming artifact is downloaded to the current directory
-          find . -type f \( -iname \*.zip -o -iname \*.tar -o -iname \*.gz \) -exec bash -c '
-            for file; do
-              case "$file" in
-                *.zip) unzip "$file" -d "${file%.zip}" ;;
-                *.tar) tar -xf "$file" -C "${file%.tar}" ;;
-                *.gz) gunzip "$file" ;;
-              esac
-            done
-          ' bash {} +
-
-      - name: Create GitHub release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: main
           name: Release ${{ github.ref }}
-          body: "Release of the Neutralino app"
-          files: ./*.zip  # Upload all .zip files to the release
+          body: "Release of the Neutralino app with remote URL webview."
+          files: neutralino-app.zip
           token: ${{ secrets.GITHUB_TOKEN }}
