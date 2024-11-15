@@ -76,32 +76,25 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Compress and Prepare Platform-specific Zip Files
+      - name: List files in dist directory
+        run: |
+          ls -l neutralino-app/dist
+
+      - name: Compress Only Necessary Files
         run: |
           cd neutralino-app/dist
-          # Ensure the directories and files exist before zipping
-          zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64 || echo "neutralino-app-linux_arm64.zip not found"
-          zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64 || echo "neutralino-app-linux_x64.zip not found"
-          zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf || echo "neutralino-app-linux_armhf.zip not found"
-          zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64 || echo "neutralino-app-mac_arm64.zip not found"
-          zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal || echo "neutralino-app-mac_universal.zip not found"
-          zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64 || echo "neutralino-app-mac_x64.zip not found"
-          zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe || echo "neutralino-app-win_x64.zip not found"
-          zip -r resources.neu.zip resources.neu || echo "resources.neu.zip not found"
+          # Auto-detect and zip available files
+          for file in neutralino-app-*; do
+            if [ -e "$file" ]; then
+              zip -r "$file.zip" "$file"
+            fi
+          done
 
-      - name: Upload Platform-specific Build Artifacts
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: |
-            neutralino-app/dist/neutralino-app-linux_arm64.zip
-            neutralino-app/dist/neutralino-app-linux_x64.zip
-            neutralino-app/dist/neutralino-app-linux_armhf.zip
-            neutralino-app/dist/neutralino-app-mac_arm64.zip
-            neutralino-app/dist/neutralino-app-mac_universal.zip
-            neutralino-app/dist/neutralino-app-mac_x64.zip
-            neutralino-app/dist/neutralino-app-win_x64.zip
-            neutralino-app/dist/resources.neu.zip
+          path: neutralino-app/dist/*.zip
 
   release:
     needs: build
@@ -118,7 +111,7 @@ jobs:
 
       - name: List downloaded artifact files
         run: |
-          ls -l
+          ls -l neutralino-app/dist
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -126,13 +119,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: |
-            neutralino-app-linux_arm64.zip
-            neutralino-app-linux_x64.zip
-            neutralino-app-linux_armhf.zip
-            neutralino-app-mac_arm64.zip
-            neutralino-app-mac_universal.zip
-            neutralino-app-mac_x64.zip
-            neutralino-app-win_x64.zip
-            resources.neu.zip
+          files: neutralino-app/dist/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
