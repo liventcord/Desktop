@@ -79,8 +79,9 @@ jobs:
       - name: Compress Each Platform Build
         run: |
           cd neutralino-app/dist
+          # Compress each platform build directly into the dist folder
           for platform in $(ls -d */); do
-            zip -r "${platform%/}.zip" "$platform"/*
+            zip -r "../${platform%/}.zip" "$platform"
           done
 
       - name: Upload Build Artifacts
