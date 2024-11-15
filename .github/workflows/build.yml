@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app
-          path: neutralino-app/dist/neutralino-app.zip
+          path: neutralino-app/dist
 
   release:
     needs: build
@@ -103,7 +103,7 @@ jobs:
 
       - name: List files in dist/neutralino-app directory
         run: |
-          tree neutralino-app/
+          ls -l neutralino-app/dist/neutralino-app/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -111,5 +111,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: ./neutralino-app/dist/neutralino-app/*.zip
+          files: neutralino-app/dist/neutralino-app/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
