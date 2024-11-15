@@ -39,6 +39,12 @@ jobs:
                     "debug.log"
                 ],
                 "globalVariables": {},
+                "cli": {
+                    "binaryName": "neutralino-app",
+                    "resourcesPath": "/resources",
+                    "extensionsPath": "/extensions",
+                    "distributionPath": "dist"
+                },
                 "modes": {
                     "window": {
                         "title": "Neutralino.js Webview App",
