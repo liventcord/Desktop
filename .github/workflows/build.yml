@@ -103,7 +103,7 @@ jobs:
 
       - name: List files in dist/neutralino-app directory
         run: |
-          ls -l neutralino-app/dist/neutralino-app/
+          tree
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
