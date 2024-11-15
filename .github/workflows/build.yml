@@ -76,11 +76,20 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: Verify the Build Output
+        run: |
+          ls -la neutralino-app/dist
+
       - name: Extract Build Artifacts
         run: |
           cd neutralino-app/dist
-          mkdir extracted
-          unzip neutralino-app.zip -d extracted/
+          if [ -f neutralino-app.zip ]; then
+            mkdir extracted
+            unzip neutralino-app.zip -d extracted/
+          else
+            echo "neutralino-app.zip not found!"
+            exit 1
+          fi
 
       - name: Create Separate ZIP Files for Each Resource
         run: |
@@ -105,7 +114,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Build Artifacts
+      - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app
