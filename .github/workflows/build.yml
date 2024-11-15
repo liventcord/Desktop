@@ -76,21 +76,23 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Create individual zips for release
+      - name: Create zip files for each platform
         run: |
-          mkdir -p neutralino-app/dist/zips
-          cd neutralino-app/dist/neutralino-app
-          for file in *; do
-            if [ -f "$file" ]; then
-              zip "../zips/$file.zip" "$file"
-            fi
-          done
+          # In case neu build did not zip automatically, manually zip all platform files
+          zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
+          zip neutralino-app-linux_armhf.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf
+          zip neutralino-app-linux_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_x64
+          zip neutralino-app-mac_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64
+          zip neutralino-app-mac_universal.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
+          zip neutralino-app-mac_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
+          zip neutralino-app-win_x64.exe.zip neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
+          zip resources.neu.zip neutralino-app/dist/neutralino-app/resources.neu
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: neutralino-app-zips
-          path: neutralino-app/dist/zips/*.zip
+          path: ./*.zip
 
   release:
     needs: build
@@ -100,7 +102,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Build Artifact
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
           name: neutralino-app-zips
@@ -115,5 +117,5 @@ jobs:
           tag_name: main
           name: Release ${{ github.ref }}
           body: "Release of the Neutralino webview app of liventcord"
-          files: neutralino-app/dist/zips/*.zip
+          files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
