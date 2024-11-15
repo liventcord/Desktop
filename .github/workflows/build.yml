@@ -76,16 +76,16 @@ jobs:
           cd neutralino-app
           neu build --release
 
-      - name: Create zip files for each platform
+      - name: Create zip files for each platform and include config and neu files
         run: |
           # In case neu build did not zip automatically, manually zip all platform files
-          zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
-          zip neutralino-app-linux_armhf.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf
-          zip neutralino-app-linux_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_x64
-          zip neutralino-app-mac_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64
-          zip neutralino-app-mac_universal.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
-          zip neutralino-app-mac_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
-          zip neutralino-app-win_x64.exe.zip neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
+          zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
+          zip neutralino-app-linux_armhf.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
+          zip neutralino-app-linux_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_x64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
+          zip neutralino-app-mac_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
+          zip neutralino-app-mac_universal.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_universal neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
+          zip neutralino-app-mac_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_x64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
+          zip neutralino-app-win_x64.exe.zip neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
           zip resources.neu.zip neutralino-app/dist/neutralino-app/resources.neu
 
       - name: Upload Build Artifacts
