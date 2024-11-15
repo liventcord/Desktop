@@ -76,18 +76,23 @@ jobs:
           cd neutralino-app
           neu build --release
 
+      - name: List contents of dist folder (for debugging)
+        run: |
+          cd neutralino-app/dist
+          ls -lR
+
       - name: Compress Each Build Option Separately
         run: |
           cd neutralino-app/dist
-          # Create separate zip files for each platform
-          zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64
-          zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf
-          zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64
-          zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64
-          zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal
-          zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64
-          zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe
-          
+          # Create separate zip files for each platform, checking if the directories exist first
+          if [ -d "neutralino-app-linux_arm64" ]; then zip -r neutralino-app-linux_arm64.zip neutralino-app-linux_arm64; fi
+          if [ -d "neutralino-app-linux_armhf" ]; then zip -r neutralino-app-linux_armhf.zip neutralino-app-linux_armhf; fi
+          if [ -d "neutralino-app-linux_x64" ]; then zip -r neutralino-app-linux_x64.zip neutralino-app-linux_x64; fi
+          if [ -d "neutralino-app-mac_arm64" ]; then zip -r neutralino-app-mac_arm64.zip neutralino-app-mac_arm64; fi
+          if [ -d "neutralino-app-mac_universal" ]; then zip -r neutralino-app-mac_universal.zip neutralino-app-mac_universal; fi
+          if [ -d "neutralino-app-mac_x64" ]; then zip -r neutralino-app-mac_x64.zip neutralino-app-mac_x64; fi
+          if [ -f "neutralino-app-win_x64.exe" ]; then zip -r neutralino-app-win_x64.zip neutralino-app-win_x64.exe; fi
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
