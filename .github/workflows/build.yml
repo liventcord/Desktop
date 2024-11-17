@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  # Add a manual trigger to create a release with specific tag (optional)
+ 
   workflow_dispatch:
 
 permissions:
@@ -115,7 +115,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.1.0
+          tag_name: v1.1.1
           name: Release v1.1.0
           body: "Release of the Neutralino webview app of liventcord"
           files: ./*.zip
