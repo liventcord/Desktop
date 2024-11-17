@@ -77,6 +77,15 @@ jobs:
         run: |
           cd neutralino-app
           neu build --release
+      - name: Make binaries executable
+        run: |
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_x64
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
+          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
 
       - name: Create zip files for each platform and include config and neu files
         run: |
