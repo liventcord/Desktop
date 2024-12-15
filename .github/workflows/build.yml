@@ -44,7 +44,7 @@ jobs:
                 "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "https://chatgpt.com",
+                "url": "http//192.168.1.38:5005/app",
                 "enableServer": false,
                 "nativeAllowList": [
                     "app.*",
