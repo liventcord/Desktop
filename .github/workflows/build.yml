@@ -44,7 +44,7 @@ jobs:
                 "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "http//192.168.1.38:5005/app",
+                "url": "https://liventcord.bsite.net/app",
                 "enableServer": false,
                 "nativeAllowList": [
                     "app.*",
