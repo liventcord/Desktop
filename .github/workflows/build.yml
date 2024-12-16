@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
- 
   workflow_dispatch:
 
 permissions:
@@ -30,12 +29,10 @@ jobs:
         run: |
           cp ./resources/icon.png neutralino-app/resources/icons/icon.png
 
-      - name: Create App.js (main entry point)
+      - name: Copy App.js from repository to Neutralino app
         run: |
           mkdir -p neutralino-app/src/js
-          echo "const icon = '/resources/icons/icon.png';" > neutralino-app/src/js/App.js
-          echo "await Neutralino.window.setIcon(icon);" >> neutralino-app/src/js/App.js
-          echo "await Neutralino.window.open({url: 'https://leventcord.bsite.net/app', fullscreen: false, width: 800, height: 600, resizable: true});" >> neutralino-app/src/js/App.js
+          cp ./src/js/App.js neutralino-app/src/js/App.js
 
       - name: Update Neutralino Config for External URL and Resources Path
         run: |
@@ -77,6 +74,7 @@ jobs:
         run: |
           cd neutralino-app
           neu build --release
+
       - name: Make binaries executable
         run: |
           chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
