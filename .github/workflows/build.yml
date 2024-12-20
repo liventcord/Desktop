@@ -40,7 +40,7 @@ jobs:
                 "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "https://leventcord.bsite.net/app",
+                "url": "https://leventcord.bsite.net",
                 "enableServer": false,
                 "nativeAllowList": [
                     "app.*",
@@ -72,15 +72,6 @@ jobs:
         run: |
           cd neutralino-app
           neu build --release
-      - name: Make binaries executable
-        run: |
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_armhf
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_x64
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_arm64
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
-          chmod +x neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
       - name: Create zip files for each platform and include config and neu files
         run: |
           zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
@@ -116,8 +107,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.1.1
-          name: Release v1.1.0
+          tag_name: v1.0.1
+          name: Release v1.0.1
           body: "Release of the Neutralino webview app of liventcord"
           files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
