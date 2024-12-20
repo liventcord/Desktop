@@ -41,7 +41,7 @@ jobs:
                 "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "https://liventcord.bsite.net/app",
+                "url": "https://leventcord.bsite.net/app",
                 "enableServer": false,
                 "nativeAllowList": [
                     "app.*",
@@ -122,8 +122,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.1.1
-          name: Release v1.1.0
+          tag_name: v1.0.0
+          name: Release v1.0.0
           body: "Release of the Neutralino webview app of liventcord"
           files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
