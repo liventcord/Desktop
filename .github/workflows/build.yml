@@ -28,14 +28,6 @@ jobs:
       - name: Copy custom icon to resources/icons folder
         run: |
           cp ./resources/icon.png neutralino-app/resources/icons/icon.png
-
-      - name: Copy App.js from repository to Neutralino app
-        run: |
-          mkdir -p neutralino-app/src/js
-          pwd
-          ls
-          cp App.js neutralino-app/src/js/App.js
-
       - name: Update Neutralino Config for External URL and Resources Path
         run: |
           if [ -f neutralino-app/neutralino.config.json ]; then
