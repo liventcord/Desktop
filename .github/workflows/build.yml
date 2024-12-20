@@ -32,7 +32,9 @@ jobs:
       - name: Copy App.js from repository to Neutralino app
         run: |
           mkdir -p neutralino-app/src/js
-          cp ./src/js/App.js neutralino-app/src/js/App.js
+          pwd
+          ls
+          cp App.js neutralino-app/src/js/App.js
 
       - name: Update Neutralino Config for External URL and Resources Path
         run: |
