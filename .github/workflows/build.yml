@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+ 
   workflow_dispatch:
 
 permissions:
@@ -20,14 +21,18 @@ jobs:
       - name: Set up Node.js and install Neutralino CLI
         run: |
           npm install -g @neutralinojs/neu
-
       - name: Create Neutralino.js App
         run: |
           neu create neutralino-app
-
       - name: Copy custom icon to resources/icons folder
         run: |
           cp ./resources/icon.png neutralino-app/resources/icons/icon.png
+      - name: Create App.js (main entry point)
+        run: |
+          mkdir -p neutralino-app/src/js
+          echo "const icon = '/resources/icons/icon.png';" > neutralino-app/src/js/App.js
+          echo "await Neutralino.window.setIcon(icon);" >> neutralino-app/src/js/App.js
+          echo "await Neutralino.window.open({url: 'https://leventcord.bsite.net/app', fullscreen: false, width: 800, height: 600, resizable: true});" >> neutralino-app/src/js/App.js
       - name: Update Neutralino Config for External URL and Resources Path
         run: |
           if [ -f neutralino-app/neutralino.config.json ]; then
@@ -63,12 +68,10 @@ jobs:
             echo "neutralino.config.json not found!"
             exit 1
           fi
-
       - name: Build App
         run: |
           cd neutralino-app
           neu build --release
-
       - name: Make binaries executable
         run: |
           chmod +x neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64
@@ -78,7 +81,6 @@ jobs:
           chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_universal
           chmod +x neutralino-app/dist/neutralino-app/neutralino-app-mac_x64
           chmod +x neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe
-
       - name: Create zip files for each platform and include config and neu files
         run: |
           zip neutralino-app-linux_arm64.zip neutralino-app/dist/neutralino-app/neutralino-app-linux_arm64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
@@ -89,7 +91,6 @@ jobs:
           zip neutralino-app-mac_x64.zip neutralino-app/dist/neutralino-app/neutralino-app-mac_x64 neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
           zip neutralino-app-win_x64.exe.zip neutralino-app/dist/neutralino-app/neutralino-app-win_x64.exe neutralino-app/neutralino.config.json neutralino-app/dist/neutralino-app/resources.neu
           zip resources.neu.zip neutralino-app/dist/neutralino-app/resources.neu
-
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -112,12 +113,11 @@ jobs:
       - name: List files to check if zips are present
         run: |
           ls -l
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.0
-          name: Release v1.0.0
+          tag_name: v1.1.1
+          name: Release v1.1.0
           body: "Release of the Neutralino webview app of liventcord"
           files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
