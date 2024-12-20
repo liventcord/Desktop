@@ -115,12 +115,11 @@ jobs:
       - name: List files to check if zips are present
         run: |
           ls -l
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v1.0.1
           name: Release v1.0.1
-          body: "Release of the Neutralino webview app of LiventCord"
-          files: liventcord/dist/liventcord/*.zip
+          body: "Release of the LiventCord webview app"
+          files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
