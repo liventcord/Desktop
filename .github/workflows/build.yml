@@ -94,7 +94,7 @@ jobs:
           zip liventcord-win_x64.exe.zip liventcord-win_x64.exe resources.neu
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: liventcord-zips
           path: liventcord/dist/liventcord/*.zip
