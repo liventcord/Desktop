@@ -4,8 +4,16 @@ on:
   push:
     branches:
       - main
- 
   workflow_dispatch:
+    inputs:
+      app_url:
+        description: 'Application URL'
+        required: true
+        default: 'https://leventcord.bsite.net/app'
+      release_version:
+        description: 'Release Version'
+        required: true
+        default: '1.0.1'
 
 permissions:
   contents: write
@@ -13,7 +21,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,7 +43,7 @@ jobs:
           mkdir -p liventcord/src/js
           echo "const icon = '/resources/icons/icon.png';" > liventcord/src/js/App.js
           echo "await Neutralino.window.setIcon(icon);" >> liventcord/src/js/App.js
-          echo "await Neutralino.window.open({url: 'https://leventcord.bsite.net/app', fullscreen: false, width: 800, height: 600, resizable: true});" >> liventcord/src/js/App.js
+          echo "await Neutralino.window.open({url: '${{ github.event.inputs.app_url }}', fullscreen: false, width: 800, height: 600, resizable: true});" >> liventcord/src/js/App.js
 
       - name: Update Neutralino Config for External URL and Resources Path
         run: |
@@ -44,7 +52,7 @@ jobs:
                 "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "https://leventcord.bsite.net/app",
+                "url": "${{ github.event.inputs.app_url }}",
                 "enableServer": false,
                 "nativeAllowList": [
                     "app.*",
@@ -115,11 +123,12 @@ jobs:
       - name: List files to check if zips are present
         run: |
           ls -l
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.1
-          name: Release v1.0.1
+          tag_name: v${{ github.event.inputs.release_version }}
+          name: Release v${{ github.event.inputs.release_version }}
           body: "Release of the LiventCord webview app"
           files: ./*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
