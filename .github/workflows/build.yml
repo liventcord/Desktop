@@ -30,7 +30,7 @@ jobs:
         run: |
           cp ./resources/icon.png liventcord/resources/icons/icon.png
 
-      - name: Create App.js (main entry point)
+      - name: Create App.js
         run: |
           mkdir -p liventcord/src/js
           echo "const icon = '/resources/icons/icon.png';" > liventcord/src/js/App.js
@@ -44,7 +44,7 @@ jobs:
                 "applicationId": "org.liventcord.app",
                 "defaultMode": "window",
                 "port": 0,
-                "url": "https://leventcord.bsite.net",
+                "url": "https://leventcord.bsite.net/app",
                 "enableServer": false,
                 "nativeAllowList": [
                     "app.*",
