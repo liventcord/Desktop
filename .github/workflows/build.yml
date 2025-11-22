@@ -9,7 +9,7 @@ on:
       app_url:
         description: 'Application URL'
         required: true
-        default: 'https://leventcord.bsite.net/app'
+        default: 'https://liventcord.github.io/LiventCord/app/'
       release_version:
         description: 'Release Version'
         required: true
