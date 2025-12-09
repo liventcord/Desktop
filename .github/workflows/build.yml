@@ -9,7 +9,7 @@ on:
       app_url:
         description: 'Application URL'
         required: true
-        default: 'https://liventcord.koyeb.app/LiventCord/app'
+        default: 'http://localhost:3000'
       release_version:
         description: 'Release Version'
         required: true
@@ -106,29 +106,3 @@ jobs:
         with:
           name: liventcord-zips
           path: liventcord/dist/liventcord/*.zip
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: liventcord-zips
-
-      - name: List files to check if zips are present
-        run: |
-          ls -l
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ github.event.inputs.release_version }}
-          name: Release v${{ github.event.inputs.release_version }}
-          body: "Release of the LiventCord webview app"
-          files: ./*.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
